@@ -49,6 +49,22 @@ Aussois, France, 7-11 May 2018
 Please ask questions any time!
 ~
 
+<!-------------------------------------------------------------------------------->
+
+## State in F\*  ##
+
+```
+(* In the last lecture, you saw how to use F* to verify simple stateful programs, e.g., *)
+
+val sum_st : n:nat -> ST nat (requires (fun h0      -> True))
+                             (ensures  (fun h0 x h1 -> x == sum_rec n /\
+                                                       modifies !{} h0 h1))
+
+(* In this lecture, you will see that standard refs alone are often unsatisfactory *)
+```
+
+
+
 <!------------------------------------------------------------------------------>
 
 ## Hello World (aka Monotonic Counters) ##
