@@ -96,7 +96,7 @@ complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
 
 2. Reasoning about various kinds of **counters**
 
-3. Reasoning about idealised (append-only) **logs**
+3. Reasoning about idealized (append-only) **logs**
 
 4. Modeling low-level safe **arrays**
 
@@ -254,11 +254,13 @@ type ref a = mref a (fun _ _ -> True)
 \ 
 ~Fragment
 ```
-(* While we cannot use tokens any more, we still get containment "for free" *)
+(* While we can't use tokens any more, we still get containment "for free" for GCd refs *)
 
 let recall (#a:Type0) (r:ref a)
   : ST unit (requires (fun _       -> True))
-            (ensures  (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r)) = MRef.recall r
+            (ensures  (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r))
+
+  = MonotonicStateSlide.recall r
 ```
 ~
 
@@ -356,16 +358,20 @@ let write #a (r:eref a) (v:a) : ST unit (requires (fun h     -> ~(Frozen? (sel h
                                         (ensures  (fun _ _ h -> sel h r == Mutable v))
   = r := Mutable v
 
-let freeze #a (r:eref a) : ST ... (* Exercise: What natural type should freeze have? *)
-  = r := Frozen (Mutable?.v !r)
+let freeze #a (r:eref a) : ST (* Exercise! *) = r := Frozen (Mutable?.v !r)
 ```
 ~Fragment
 ```
 ST unit (requires (fun h0      -> Mutable? (sel h0 r)))
+```
+~
+~Fragment
+```
         (ensures  (fun h0 _ h1 -> Mutable? (sel h0 r) /\ Frozen? (sel h1 r) /\
                                   Mutable?.v (sel h0 r) == Frozen?.v (sel h1 r)))
 ```
 ~
+
 
 <!------------------------------------------------------------------------------>
 
@@ -406,7 +412,7 @@ let main () : St unit =
 
 1. Arrays are created uninitialized
 
-2. Only initialized elements can be read by clients
+2. Only initialized elements can be read from arrays
 
 3. Arrays can be mutated until they are frozen
 
@@ -414,7 +420,9 @@ let main () : St unit =
 
 5. Frozen arrays can only be read
 
-  * (no initialization proof obligations when reading from a frozen array)
+  * no mutation of array elements
+
+  * no initialization preconditions for reading
 
 
 
