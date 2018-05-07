@@ -26,7 +26,7 @@ HTML Meta     : clear
 
 [EPIT 2018 Software Verification Spring School](http://projects.lsv.fr/epit18/)
 
-Aussois, France, 8 May, 2018
+Aussois, France, 7 May, 2018
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
@@ -42,7 +42,7 @@ Aussois, France, 8 May, 2018
 
 * Danel: Monotonic State in F*
 
-* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
+* C&#259;t&#259;lin: Monadic effects and F*'s SMT encoding
 
 * Antoine: Security verification and cryptographic modelling in F*
 
@@ -122,13 +122,13 @@ but only first-order logic
 
 ~Columns
 ~~ Column {width 50%}
-- Danel Ahman
+- **Danel Ahman**
 - Benjamin Beurdouche
 - Karthikeyan Bhargavan
 - Tej Chajed
-- Antoine Delignat-Lavaud
-- Victor Dumitrescu
-- **Cédric Fournet**
+- **Antoine Delignat-Lavaud**
+- **Victor Dumitrescu**
+- Cédric Fournet
 - Armaël Guéneau
 - **Cătălin Hriţcu**
 - Samin Ishtiaq
@@ -141,7 +141,7 @@ but only first-order logic
 - Clément Pit-Claudel
 - Jonathan Protzenko
 - Tahina Ramananandro
-- **Aseem Rastogi**
+- Aseem Rastogi
 - **[Nikhil Swamy (benevolent dictator)]{color:DarkGreen}**
 - Christoph M. Wintersteiger
 - Santiago Zanella-Béguelin
@@ -616,7 +616,7 @@ got expression "s1" of type "Stack.stack"
 
 * Danel: Monotonic State in F*
 
-* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
+* C&#259;t&#259;lin: Monadic effects and F*'s SMT encoding
 
 * Antoine: Security verification and cryptographic modelling in F*
 
