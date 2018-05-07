@@ -1,5 +1,5 @@
 [INCLUDE=presentation]
-Title         : Program Verification with F*
+Title         : Monotonic State in F*
 Author        : Danel Ahman
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
@@ -16,7 +16,7 @@ Package       : xypic
 [INCLUDE=../../stuff/latex.tex]
 ~
 
-# Monotonic State in F*  #
+# Monotonic State in F\*  #
 
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
@@ -30,6 +30,25 @@ Aussois, France, 7-11 May 2018
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
 
+<!-------------------------------------------------------------------------------->
+
+## Schedule ##
+
+* C&#259;t&#259;lin: A Gentle Introduction to F\*:\
+  Verifying purely functional programs
+
+* C&#259;t&#259;lin: Verifying Stateful Programs in F\*
+
+* **Danel: Monotonic State in F\***
+
+* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
+
+* Antoine: Security verification and cryptographic modelling in F\*
+
+~Fragment
+Please ask questions any time!
+~
+
 <!------------------------------------------------------------------------------>
 
 ## Hello World (aka Monotonic Counters) ##
@@ -37,15 +56,15 @@ Aussois, France, 7-11 May 2018
 ```
 (* Simple interface to monotonic counters *)
 
-val create : i:int     -> ST counter ...
-val read   : c:counter -> ST int     ...
-val incr   : c:counter -> ST unit    ...
+val create: i:int     -> ST counter (ensures (fun h c h' -> fresh h c /\ ...))
+val read  : c:counter -> ST int     (ensures (fun h i h' -> sel h' c = i /\ h == h'))
+val incr  : c:counter -> ST unit    (ensures (fun h _ h' -> sel h' c = sel h c + 1 /\ ...))
 ```
 ~Fragment
 ```
 (* Verifying code using monotonic counters *)
 
-let example () : St unit = 
+let main () : St unit = 
   let c = create 0 in incr c;
 
   let i = read c in assert (i > 0);
@@ -57,11 +76,10 @@ let example () : St unit =
 ~
 ~Fragment
 ```
-(* A naive fix *)
+(* A naive fix for this particular example *)
 
-complex_procedure : c:_ -> ST unit (fun h0 -> sel h0 c > 0) (fun _ _ h1 -> sel h1 c > 0)
-
-(* Rest of this lecture: Can we do something more general and more principled? *)
+complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
+                                         (ensures  (fun _ _ h' -> sel h' c > 0))
 ```
 ~
 
@@ -69,7 +87,7 @@ complex_procedure : c:_ -> ST unit (fun h0 -> sel h0 c > 0) (fun _ _ h1 -> sel h
 
 ## Uses of Monotonic State in F\* ##
 
-1. For implementing a range of memory models, e.g., 
+1. For implementing a range of memory models 
 
   * Untyped references
   * Typed references
@@ -128,6 +146,7 @@ val (:=) : #a:Type0 -> #rel:preorder a -> r:mref a rel -> v:a ->
 
 (* While := enforces monotonicity, we cannot yet make use of it in verification! *)
 ```
+\
 ~Fragment
 ```
 (* To this end, we focus on a certain subset of stateful predicates, the stable ones *)
@@ -136,7 +155,11 @@ type predicate (a:Type) = a -> Type0
 
 let stable (#a:Type) (p:predicate a) (rel:preorder a) =
   forall (x y:a). p x /\ rel x y ==> p y
-
+```
+~
+\
+~Fragment
+```
 (* Intuition: once valid, stable predicates remains valid in all future heaps *)
 ```
 ~
@@ -151,7 +174,7 @@ let stable (#a:Type) (p:predicate a) (rel:preorder a) =
 ## Monotonic State in F\* (part 3) ##
 
 ```
-(* To make easy use of monotonicity in verification, F* introduces (in FStar.MRef): *)
+(* To make easy use of monotonicity in verification, F\* introduces (in FStar.MRef): *)
 ```
 ~Fragment
 ```
@@ -175,7 +198,7 @@ val recall_token : #a:Type0 -> #rel:preorder a -> r:mref a b -> p:(a -> Type0) -
 ~
 ~Fragment
 ```
-(* As a bonus, we also have recall for existence of GCd references (see FStar.ST) *)
+(* As a bonus, we have recall "for free" for existence of GCd references *)
 
 val recall : #a:Type0 -> #rel:preorder a -> r:mref a rel ->
   ST unit (requires (fun _       -> True))
@@ -206,7 +229,7 @@ let incr   c = c := (!c + 1)
 ```
 (* Finally, we prove the example using witness_token and recall_token *)
 
-let example () : St unit = 
+let main () : St unit = 
   let c = create 0 in incr c;
 
   let i = read c in assert (i > 0);
@@ -221,6 +244,26 @@ let example () : St unit =
 
 <!------------------------------------------------------------------------------>
 
+## Typed References ##
+
+```
+(* Typed references from Catalin's lectures are just an instance of mrefs *)
+
+type ref a = mref a (fun _ _ -> True)
+```
+\ 
+~Fragment
+```
+(* While we cannot use tokens any more, we still get containment "for free" *)
+
+let recall (#a:Type0) (r:ref a)
+  : ST unit (requires (fun _       -> True))
+            (ensures  (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r)) = MRef.recall r
+```
+~
+
+<!------------------------------------------------------------------------------>
+
 ## Simple Monotonic Log ##
 
 ```
@@ -230,7 +273,7 @@ let lref = mref (list int) subset
 
 (* where *)
 
-let subset (l1 l2:list int) = forall x. x `mem` l1 ==> x `mem` l2
+let subset (l1 l2:list int) = forall x . x `mem` l1 ==> x `mem` l2
 
 ```
 ~Fragment
@@ -244,7 +287,7 @@ let add_to_log (r:lref) (v:int) : ST unit (requires (fun _     -> True))
 ~
 ~Fragment
 ```
-let example () : St unit =
+let main () : St unit =
   let r = alloc subset [] in add_to_log r 42;
   
   witness r (fun xs -> 42 `mem` xs);
@@ -336,7 +379,7 @@ let freeze (#a:Type) (r:eref a)       = r := Frozen (Mutable?.v !r)
 ```
 ~Fragment
 ```
-let example () : St unit =
+let main () : St unit =
   let r = alloc int in
   (* ignore (read r) -- fails like it should *)
   write r 42;
@@ -389,6 +432,13 @@ D. Ahman, C. Fournet, C. Hritcu, K. Maillard, A. Rastogi, N. Swamy<br />
 **Recalling a Witness: Foundations and Applications of Monotonic State**<br />
 POPL 2018
 
+<!------------------------------------------------------------------------------>
+
+## Bonus Material: How the Sausage is Made ##
+
+<br />
+
+(see FStar.Monotonic.Heap, FStar.ST, and FStar.MRef)
 
 <!------------------------------------------------------------------------------>
 
@@ -398,12 +448,17 @@ POPL 2018
 
 (see Snapshots.fst)
 
-
 <!------------------------------------------------------------------------------>
 
-## Bonus Material: How the Sausage is Made ##
+## Schedule ##
 
-<br />
+* C&#259;t&#259;lin: A Gentle Introduction to F\*:\
+  Verifying purely functional programs
 
-(see FStar.Monotonic.Heap, FStar.ST, and FStar.MRef)
+* C&#259;t&#259;lin: Verifying Stateful Programs in F\*
 
+* Danel: Monotonic State in F\*
+
+* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
+
+* Antoine: **Security verification and cryptographic modelling in F\***
