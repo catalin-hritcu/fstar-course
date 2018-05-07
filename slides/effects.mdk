@@ -57,13 +57,14 @@ Aussois, France on 8 May, 2018
 
 * **Monadic effects in F***
 
-* **Verifying effectful programs extrinsically** (monadic reification)
+* **Tactics** as a user-defined, non-primitive effect
 
-* **Tactics** as a user-defined, non-primitive effect (experimental)
-
-* **Under the hood:** Weakest pre-conditions and Dijkstra monads (for free)
+* **Under the hood:** Weakest pre-conditions (and Dijkstra monads, for free)
 
 * **Under the hood:** F* to SMT encoding
+
+<!-- commented out because of lack of time -->
+<!-- * **Verifying effectful programs extrinsically** (monadic reification) -->
 
 <!------------------------------------------------------------------------------>
 
@@ -169,49 +170,49 @@ sub_effect STATE ~> STEXN {
 
 <!------------------------------------------------------------------------------>
 
-## Verifying effectful programs extrinsically ##
+<!-- ## Verifying effectful programs extrinsically ## -->
 
-<!------------------------------------------------------------------------------>
+<!-- <\!-----------------------------------------------------------------------------\-> -->
 
-## Verifying effectful programs ## {#effect2}
-### New way: extrinsically (by exposing pure monadic representation) ###
+<!-- ## Verifying effectful programs ## {#effect2} -->
+<!-- ### New way: extrinsically (by exposing pure monadic representation) ### -->
 
-* {.fragment} Monadic reification (intuitively)
-    ```
-    STATE.reify : (St a) -> Ghost (nat -> Tot (a * nat))
-    ```
+<!-- * {.fragment} Monadic reification (intuitively) -->
+<!--     ``` -->
+<!--     STATE.reify : (St a) -> Ghost (nat -> Tot (a * nat)) -->
+<!--     ``` -->
 
-<!-- reify only when the abstraction permits (e.g. ghost code) -->
+<!-- <\!-- reify only when the abstraction permits (e.g. ghost code) -\-> -->
 
-* {.fragment} Allows us to give **weak specification** to an effectful function
-  ```
-    let incr (r:ref nat) : St unit = (r := (!r + 1))
-  ```
+<!-- * {.fragment} Allows us to give **weak specification** to an effectful function -->
+<!--   ``` -->
+<!--     let incr (r:ref nat) : St unit = (r := (!r + 1)) -->
+<!--   ``` -->
 
-* {.fragment} and **prove lemmas about reification** of effectful computation
-  ```
-    let incr_works (r:ref nat) (h:heap) :
-      Lemma (sel (snd (STATE.reify (incr r) h)) r = sel h r + 1) = ()
-  ```
+<!-- * {.fragment} and **prove lemmas about reification** of effectful computation -->
+<!--   ``` -->
+<!--     let incr_works (r:ref nat) (h:heap) : -->
+<!--       Lemma (sel (snd (STATE.reify (incr r) h)) r = sel h r + 1) = () -->
+<!--   ``` -->
 
-<!-- TODO: try out this code -->
+<!-- <\!-- TODO: try out this code -\-> -->
 
-<!-- STATE.reify (e : ST a pre post) -->
-<!--   : n0:nat -> Pure (a * nat) (requires (pre n0)) -->
-<!--                              (ensures (fun r -> post n0 (fst r) (snd r)) -->
+<!-- <\!-- STATE.reify (e : ST a pre post) -\-> -->
+<!-- <\!--   : n0:nat -> Pure (a * nat) (requires (pre n0)) -\-> -->
+<!-- <\!--                              (ensures (fun r -> post n0 (fst r) (snd r)) -\-> -->
 
-<!------------------------------------------------------------------------------>
+<!-- <\!-----------------------------------------------------------------------------\-> -->
 
-## Reification works very well ##
+<!-- ## Reification works very well ## -->
 
-* **Reducing effectful verification to pure verification**
-    - for which F* already has good support (i.e. SMT automation)
+<!-- * **Reducing effectful verification to pure verification** -->
+<!--     - for which F* already has good support (i.e. SMT automation) -->
 
-* **Recent experiments using this for "relational verification"**
-    - Correctness of program transformations
-    - Information flow control
-    - Proofs of algorithmic optimizations (memoization, union-find)
-    - Simple game-based cryptographic proofs
+<!-- * **Recent experiments using this for "relational verification"** -->
+<!--     - Correctness of program transformations -->
+<!--     - Information flow control -->
+<!--     - Proofs of algorithmic optimizations (memoization, union-find) -->
+<!--     - Simple game-based cryptographic proofs -->
 
 <!------------------------------------------------------------------------------>
 
@@ -255,20 +256,8 @@ sub_effect STATE ~> STEXN {
 ~
 [tactics-assert_by_tactic]: ../../stuff/tactics-assert_by_tactic.png { heigth=50% }
 
-<!-- TODO: update screenshots -->
-
 <!------------------------------------------------------------------------------>
 
-## Tactics can discharge verification conditions (replacing SMT) ##
-
-~Center
-![tactics-multi]
-~
-[tactics-multi]: ../../stuff/tactics-multi.png { heigth=50% }
-
-<!-- TODO: use the non-linear arithmetic example / canonizer instead -->
-
-<!------------------------------------------------------------------------------>
 
 ## Tactics can massage verification conditions (complementing SMT) ##
 
@@ -290,21 +279,15 @@ sub_effect STATE ~> STEXN {
 
 ## Early uses of tactics ##
 
-* **Arithmetic expression canonizer** (proof automation)
+* **Reflective tactics for arithmetic** (proof automation)
 
 * **Bitvectors in Vale** (proof automation)
 
-* **Separation logic** (proof automation, ongoing, ask Aseem)
+* **Separation logic** (proof automation)
 
-* **Pattern matcher** (proof automation, ongoing)
+* **Pattern matcher** (metaprogramming)
 
-* **Generate code for inductive types** (metaprogramming, ongoing)
-
-* **Turn F\* to Low\* buffer code** (metaprogramming, upcoming)
-
-* **Metatheory of subsets of F\*** (interactive proofs, upcoming)
-
-<!-- TODO: update this list given ICFP submission -->
+* **Efficient parsers and printers** (metaprogramming)
 
 
 <!------------------------------------------------------------------------------>
@@ -315,7 +298,7 @@ sub_effect STATE ~> STEXN {
 
 ### Dijkstra monads for free ###
 
-<!------------------------------------------------------------------------------>
+### SMT encoding ###
 
 <!------------------------------------------------------------------------------>
 
@@ -412,6 +395,7 @@ state, exceptions, continuations, etc.
 * {.fragment} From monadic effect definition we can derive a
 **correct-by-construction weakest-precondition calculus** for this effect.
 
+<!-- commented this out because of lack of time -->
 <!-- TODO: take slides 8--12 and 14 from Guido's POPL talk -->
 
 <!-- ## Formalization ## -->
@@ -483,25 +467,123 @@ state, exceptions, continuations, etc.
 
 <!------------------------------------------------------------------------------>
 
-<!-- TODO: add slides on SMT encoding
+# From F\* to SMT # {#fstar2smt}
 
-Encoding classical, dependently typed, higher-order logic to SMT
+<!------------------------------------------------------------------------------>
 
-Goals: soundness (part of TCB), predictability, efficiency, completeness
-- pragmatic balance between completeness and practical tractability
+## SMT encoding ## {#smtencoding}
 
-For this the encoding
-(1) combines a deep and a shallow embedding of F* terms
-(2) allows bounded unrolling of recursive and inductive definitions, and
-(3) performs lambda lifting for eliminating higher-order functions
+- F* verification conditions
+  + **classical, dependently typed, higher-order logic**
 
-Example illustrating some of this by encoding factorial function ...
+- {.fragment}We encode this to SMT
+  + goals: **soundness**, **predictability**, **efficiency**, **scalability**
+  + pragmatic balance between **completeness** and **practical tractability**
 
-...
+- {.fragment}The encoding
+  + **preserves types**
+  + combines a **deep and a shallow embedding** of F* terms
+  + allows **bounded unrolling** of recursive and inductive definitions
+  + performs **lambda lifting** for eliminating higher-order functions
+  + targets **FOL + equality and function symbols + arithmetic + e-matching **
+  + uses **SMT-patterns** extensively to guide instantiation of quantifiers
+  + currently targets only Z3 (but some experiments with CVC4)
 
-Something about soundness proofs for small simplified model (Alejandro's work)
+<!------------------------------------------------------------------------------>
 
--->
+## Encoding primitive operations and types ##
+
+* [Primitive types]{color=Black;} (booleans, integers...) are boxed
+
+  ```smt
+  (declare-sort Term)
+
+  (declare-fun BoxInt (Int) Term)
+  (declare-fun BoxInt_proj (Term) Int)
+  (assert (forall ((@x Int)) (= (BoxInt_proj (BoxInt @x)) @x))) 
+ 
+  (declare-fun Prims.int () Type)
+  (assert (forall ((@x Int)) (HasType (BoxInt @x) Prims.int))))
+  ```
+  
+  Operators are given shallow semantics: 
+  ```smt
+   (assert (forall ((@x Term) (@y Term))
+     (= (op_Subtraction @x @y) (BoxInt (- (BoxInt_proj @x) (BoxInt_proj @y))))))
+   ```
+
+<!------------------------------------------------------------------------------>
+
+## Typechecking factorial ##
+```
+type nat = x:int{x>=0}
+let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
+```
+* {.fragment}Encoding type `nat`:
+```smt
+(assert (forall ((@x Term))
+  (iff (HasType @x nat) (and (HasType @x int) (>= (BoxInt_proj @x) 0)))))
+```
+* {.fragment}Proving termination:
+```smt
+(declare-fun n () Term)
+(assert (not (implies (and (HasType n nat) (not (= n (BoxInt 0))))
+                      (Valid (Precedes (op_Subtraction n (BoxInt 1)) n)))))
+```
+* {.fragment}Can be proved because of this axiom:
+```smt
+((assert (forall ((@x Term) (@y Term))
+   (implies (and (HasType @x nat) (HasType @y nat)
+                 (< (BoxInt_proj @x) (BoxInt_proj @y)))
+            (Valid (Precedes @x @y))))))
+```
+
+<!------------------------------------------------------------------------------>
+
+## Typechecking factorial (2) ##
+```
+type nat = x:int{x>=0}
+let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
+```
+* {.fragment}Return value is `nat`
+```smt
+(declare-fun n () Term)
+(assert (HasType n nat))
+(assert (forall ((@x Term))
+                (implies (and (HasType @x nat) (Valid (Precedes @x n)))
+                         (HasType (factorial @x) nat))))
+```
+```smt
+(assert (not (ite (BoxBool_proj (op_Equality int n (BoxInt 0)))
+                  (>= 1 0)
+                  (>= (BoxInt_proj (op_Multiply n
+                        (factorial (op_Subtraction n (BoxInt 1))))) 0 ))))
+```
+
+<!------------------------------------------------------------------------------>
+
+## Allowing SMT solver to do bounded unrolling ##
+```
+type nat = x:int{x>=0}
+let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
+```
+```smt
+(declare-datatypes () ((Fuel (ZFuel) (SFuel (prec Fuel)))))
+(declare-fun MaxFuel () Fuel)   (assert (= MaxFuel (SFuel (SFuel ZFuel))))
+```
+```smt
+(assert (forall ((@f Fuel) (x Term))
+        (implies (HasType x nat)
+                 (= (factorial_fuel (SFuel @f) x)
+                    (ite (op_Equality int x (BoxInt 0))
+                         (BoxInt 1)
+                         (op_Multiply x
+                                (factorial_fuel @f
+                                     (op_Subtraction x (BoxInt 1)))))))))
+```
+```smt
+(assert (forall ((@x Term)) (= (factorial @x) (factorial_fuel MaxFuel @x))))
+```
 
 <!------------------------------------------------------------------------------>
 
@@ -509,13 +591,17 @@ Something about soundness proofs for small simplified model (Alejandro's work)
 
 * **[Improve tactics]{color:DarkBlue;}**, balance automation and control
 
-* {.fragment} **[Better treatment of effects]{color:DarkBlue;}**: Dijkstra monads for free v2
+* {.fragment} **[Better treatment of effects]{color:DarkBlue;}**:
+  Dijkstra monads for free v2
 
-* {.fragment} **[Studying more effects]{color:DarkBlue;}**: probabilities, concurrency, ...
+* {.fragment} **[Studying more effects]{color:DarkBlue;}**:
+  probabilities, concurrency, ...
 
-* {.fragment} **[Effect masking]{color:DarkBlue;}**: hiding exceptions, state, divergence(!?), ...
+* {.fragment} **[Effect masking]{color:DarkBlue;}**:
+  hiding exceptions, state, divergence(!?), ...
 
-* {.fragment} **[Further work out metatheory]{color:DarkBlue;}** and **[self-certify core type-checker]{color:DarkBlue;}**
+* {.fragment} **[Further work out metatheory]{color:DarkBlue;}**
+  and **[self-certify core type-checker]{color:DarkBlue;}**
   - **monadic reification + monotonic state** and **relation to modal logic**
   - soundly allowing **subtyping for datatypes** (`list nat <: list int`)
 
