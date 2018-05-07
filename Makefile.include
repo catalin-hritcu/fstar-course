@@ -1,0 +1,7 @@
+ifndef FSTAR_HOME
+   $(error "Please define the `FSTAR_HOME` variable before including this makefile.")
+endif
+
+include $(FSTAR_HOME)/examples/Makefile.include
+HINTS_ENABLED=
+include $(FSTAR_HOME)/ulib/ml/Makefile.include

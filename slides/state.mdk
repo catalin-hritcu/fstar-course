@@ -1,0 +1,258 @@
+[INCLUDE=presentation]
+Title         : Program Verification with F*
+Author        : Catalin Hritcu
+Affiliation   : Inria Paris
+Reveal Url    : ../reveal.js
+Reveal Theme  : white
+Colorizer     : ../../stuff/fstarlang
+Logo          : False
+Html Header   :
+    <script src="../../stuff/script.js"></script>
+    <link rel="stylesheet" href="../../stuff/style.css" id="custom_style">
+Package       : xypic
+~Pre,~Code: language=fstarlang
+
+~ MathDefs
+[INCLUDE=../../stuff/latex.tex]
+~
+
+# Verifying Stateful Programs with F\* #
+
+~Center
+[![fstar-logo]](https://www.fstar-lang.org)
+
+**[C&#259;t&#259;lin Hri&#355;cu, Inria Paris](http://prosecco.gforge.inria.fr/personal/hritcu/)**
+
+[EPIT 2018 Software Verification Spring School](http://projects.lsv.fr/epit18/)
+
+Aussois, France, 8 May, 2018
+~
+
+[fstar-logo]: ../../stuff/fstar-new.png { width=200px }
+
+<!------------------------------------------------------------------------------>
+
+## Verifying stateful programs ## {#stateful1}
+<!-- ### Variant #1: intrinsically (at definition time) ### -->
+
+* State in F\*: **mutable references**
+  ```
+  val incr : r:ref int -> St unit
+  let incr r = (r := (!r + 1))
+  ```
+
+* {.fragment} Hoare logic-style **[pre-conditions]{color:DarkGreen}** and **[post-conditions]{color:DarkRed}**
+  ```
+  [INCLUDE=../../../code/state/IncrST.fst:incr_type]
+  ```
+* {.fragment} Beyond what can be expressed with refinements
+* {.fragment} stateful **[pre-condition]{color:DarkGreen}** is **[relation on initial states]{color:DarkGreen}**
+* {.fragment} **[post-condition]{color:DarkRed}** is **[relation on initial states, results, and final states]{color:DarkRed}**
+* {.fragment} the more complex the effect, the more complex the specs (and proofs)
+
+<!-- `St` is actually just an abbreviation -->
+<!-- St t = ST t (requires True) (ensures (fun _ _ _ -> True)) -->
+
+<!------------------------------------------------------------------------------>
+
+## Heap and ST interfaces (much simplified) ##
+```
+module Heap
+[INCLUDE=../../../code/state/Heap.fsti:heap_model]
+```
+
+~Fragment
+```
+module ST
+[INCLUDE=../../../code/state/ST.fsti:ops]
+```
+~
+
+<!-- leaving out alloc here, since it's not interesting for our examples,
+     where allocation happens outside the code that we verify -->
+     
+<!-- simplifying out the `contains` for now. Only used in IncrST.fst:two_refs -->
+
+<!-- For read the spec we give is in fact more complicated than what we
+     have in ulib/FStar.ST.fst, so this is not a simplification!
+abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
+  STATE a (fun p h -> p (sel h r) h) = ...
+     It's maybe still helps to illustrate modifies on very simple examples,
+     although it's still quite debatable if the cheat is worth it.
+-->
+
+<!------------------------------------------------------------------------------>
+
+## Verifying incr (intuition) ##
+
+```
+[INCLUDE=../../../code/state/ST.fsti:ops]
+```
+```
+[INCLUDE=../../../code/state/Incr2ST.fst:incr2]
+```
+~Fragment
+```
+[INCLUDE=../../../code/state/IncrST.fst:incr_type]
+```
+~
+~Fragment
+```
+[INCLUDE=../../../code/state/IncrST.fst:modifies_trans]
+```
+~
+<!-- modifies !{} h0 h1 /\ modifies !{r} h1 h2 ==> modifies !{r} h0 h2 -->
+
+<!------------------------------------------------------------------------------>
+
+## Typing rule for let / sequencing (intuition) ##
+
+```
+[INCLUDE=../../../code/state/Incr2ST.fst:incr2]
+```
+
+```
+  G |- e1 : ST t1 (requires (fun h0 -> pre)) (ensures (fun h0 x1 h1 -> post))
+  G, x1:t1 |- e2 : ST t2 (requires (fun h1 -> exists h0. post))
+                         (ensures (fun h1 x2 h2 -> post'))
+  ---------------------------------------------------------------------------
+  G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
+                      (ensures (fun h x2 h2 -> exists x1 h1. post /\ post'))
+```
+
+<!------------------------------------------------------------------------------>
+
+<!-- ## Using incr ## -->
+<!-- ``` -->
+<!-- [INCLUDE=../../../code/state/IncrST.fst:incr_type] -->
+<!-- ``` -->
+
+<!-- ``` -->
+<!-- [INCLUDE=../../../code/state/IncrST.fst:two_refs] -->
+<!-- ``` -->
+
+<!-- this one so simple that it seems artificial;
+     more important it causes complications with the `contains`
+     - other examples can introduce anti-aliasing (e.g. SwapIntRefsST)
+ -->
+
+<!------------------------------------------------------------------------------>
+
+## Reference swapping (hand proof sketch)
+```
+[INCLUDE=../../../code/state/SwapRefsST.fst:swap]
+```
+
+~Fragment
+```
+[INCLUDE=../../../code/state/SwapRefsST.fst:swap_proof]
+```
+~
+* {.fragment} This variant is correct even when `r1` and `r2` are aliased
+
+<!------------------------------------------------------------------------------>
+
+## Integer reference swapping (the funny way) ##
+
+```
+[INCLUDE=../../../code/state/SwapIntRefsST.fst:swap_add_sub]
+```
+
+* Correctness of this variant relies on `r1` and `r2` not being aliased
+
+* ... and on `int` being unbounded (mathematical) integers
+
+* {.fragment} Exercise: sketch hand proof that this code is correct
+
+<!-- TODO: write down solution for this one -->
+
+<!-- ~Block {.console} -->
+<!-- ```text -->
+<!-- ... -->
+<!-- r1=2; r2=1 -->
+<!-- ``` -->
+<!-- ~ -->
+<!-- shouldn't focus on runing it (can verify it!) -->
+
+<!------------------------------------------------------------------------------>
+
+<!-- ## Exercise: specify imperative factorial ## -->
+<!-- ``` -->
+<!-- [INCLUDE=../../../ex/FactorialST.fst:fact] -->
+<!-- ``` -->
+
+<!-- This is exercise is flaky when run with --verify_all
+     https://github.com/FStarLang/FStar/issues/1281 -->
+
+<!-- DONE: removed! nothing of value was lost
+        Another confusing thing about this example is that it
+        works just fine even when the references are aliased.
+        This is a sign that only a single reference is needed.
+        or whatever, no references are needed!
+        Artificial to death!
+
+     Switched to better examples
+        - CountST -- nice and simple
+        - SumST -- nice and simple, proof on the spec, but nonlinear arithmetic
+        - FibbonaciST -- more complex, simple functional definition not tail recursive
+-->
+
+<!------------------------------------------------------------------------------>
+
+## Stateful count: 1 + 1 + 1 + ... ##
+```
+[INCLUDE=../../../code/state/CountST.fst:count_st]
+```
+* {.fragment} The truth about modifies and allocation (kind of, still simplified)
+  ```
+  [INCLUDE=../../../code/state/Heap2.fsti:modifies_contains]
+  ```
+  ```
+  [INCLUDE=../../../code/state/ST.fsti:alloc]
+  ```
+
+
+<!------------------------------------------------------------------------------>
+
+## Stateful sum: 1 + 2 + 3 + ... ##
+~Fragment
+```
+[INCLUDE=../../../ex/SumST.fst:sum_rec]
+```
+~
+```
+[INCLUDE=../../../ex/SumST.fst:sum_st]
+```
+
+<!-- TODO: SumST.fst: the non-linear arith part of it is very flaky!
+           do it with tactics maybe? canonizer!? -->
+
+
+<!------------------------------------------------------------------------------>
+
+## Stateful Fibonacci: 1 + 1 + 2 + 3 + 5 + 8 + ... ##
+```
+[INCLUDE=../../../code/state/FibonacciST.fst:fibonacci]
+```
+~Fragment
+```
+[INCLUDE=../../../code/state/FibonacciST.fst:fibonacci_stprime]
+```
+~
+```
+[INCLUDE=../../../code/state/FibonacciST.fst:fibonacci_st]
+```
+
+<!------------------------------------------------------------------------------>
+
+<!-- ## Stateful invariants ## -->
+
+<!-- ``` -->
+<!--   let r = alloc #nat 0 in -->
+<!--   r := 1; -->
+<!--   r := 2 -->
+<!-- (*   r := -2 -- expected type Prims.nat; got type Prims.int *) -->
+<!-- ``` -->
+
+<!-- TODO: some better example here would be good -->
+<!--       reference holding a non-empty list? -->
