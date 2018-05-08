@@ -46,7 +46,7 @@ let write (#a:Type) (r:eref a) (v:a) :
 
 let freeze (#a:Type) (r:eref a) :
       ST unit (requires (fun h0 -> Mutable? (sel h0 r)))
-              (ensures (fun h0 _ h1 -> Mutable? (sel h0 r) /\ Frozen? (sel h1 r) /\
+              (ensures (fun h0 _ h1 -> Frozen? (sel h1 r) /\
                                 Mutable?.v (sel h0 r) == Frozen?.v (sel h1 r)))
   = r := Frozen (Mutable?.v !r)
 
