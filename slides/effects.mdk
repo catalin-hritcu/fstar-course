@@ -16,7 +16,7 @@ Package       : xypic
 [INCLUDE=../../stuff/latex.tex]
 ~
 
-# Monadic effects and F*'s SMT encoding #
+# F*'s effects, VCs, tactics, and SMT encoding #
 
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
@@ -47,9 +47,8 @@ Aussois, France on 8 May, 2018
   - **Refined computation types**: `Pure t pre post`
   - computationally and proof irrelevant, discharged by SMT
 
-* **[Subtyping and sub-effecting]{color:DarkRed}**
-
-* **[Extensional equality]{color:DarkRed}**
+* **[Subtyping and sub-effecting]{color:DarkRed}**,
+  **[Extensional equality]{color:DarkRed}**
 
 <!------------------------------------------------------------------------------>
 
@@ -216,7 +215,7 @@ sub_effect STATE ~> STEXN {
 
 <!------------------------------------------------------------------------------>
 
-## Tactics ##
+## Tactics as a user-defined, non-primitive effect ##
 
 <!------------------------------------------------------------------------------>
 
@@ -277,7 +276,7 @@ sub_effect STATE ~> STEXN {
 
 <!------------------------------------------------------------------------------>
 
-## Early uses of tactics ##
+## Some uses of tactics ##
 
 * **Reflective tactics for arithmetic** (proof automation)
 
@@ -294,9 +293,7 @@ sub_effect STATE ~> STEXN {
 
 ## Under the hood ##
 
-### Weakest pre-conditions ###
-
-### Dijkstra monads for free ###
+### Weakest pre-conditions (Dijkstra monads for free) ###
 
 ### SMT encoding ###
 
@@ -392,7 +389,7 @@ by selective **continuation-passing style (CPS)** returning `Type0`
 * {.fragment} **This works well for large class of monadic effects:**\
 state, exceptions, continuations, etc.
 
-* {.fragment} From monadic effect definition we can derive a
+* {.fragment} From monadic effect definition we can derive a\
 **correct-by-construction weakest-precondition calculus** for this effect.
 
 <!-- commented this out because of lack of time -->
@@ -477,6 +474,7 @@ state, exceptions, continuations, etc.
   + **classical, dependently typed, higher-order logic**
 
 - {.fragment}We encode this to SMT
+  + **FOL + equality and function symbols + arithmetic + e-matching **
   + goals: **soundness**, **predictability**, **efficiency**, **scalability**
   + pragmatic balance between **completeness** and **practical tractability**
 
@@ -484,10 +482,9 @@ state, exceptions, continuations, etc.
   + **preserves types**
   + combines a **deep and a shallow embedding** of F* terms
   + allows **bounded unrolling** of recursive and inductive definitions
-  + performs **lambda lifting** for eliminating higher-order functions
-  + targets **FOL + equality and function symbols + arithmetic + e-matching **
+  + eliminates first-class functions by **lambda lifting**
   + uses **SMT-patterns** extensively to guide instantiation of quantifiers
-  + currently targets only Z3 (but some experiments with CVC4)
+  + currently targets only Z3 (but some early experiments with CVC4)
 
 <!------------------------------------------------------------------------------>
 
@@ -532,10 +529,10 @@ let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
 ```
 * {.fragment}Can be proved because of this axiom:
 ```smt
-((assert (forall ((@x Term) (@y Term))
-   (implies (and (HasType @x nat) (HasType @y nat)
-                 (< (BoxInt_proj @x) (BoxInt_proj @y)))
-            (Valid (Precedes @x @y))))))
+(assert (forall ((@x Term) (@y Term))
+           (implies (and (HasType @x nat) (HasType @y nat)
+                         (< (BoxInt_proj @x) (BoxInt_proj @y)))
+                    (Valid (Precedes @x @y)))))
 ```
 
 <!------------------------------------------------------------------------------>
@@ -569,8 +566,10 @@ let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
 ```
 ```smt
 (declare-datatypes () ((Fuel (ZFuel) (SFuel (prec Fuel)))))
-(declare-fun MaxFuel () Fuel)   (assert (= MaxFuel (SFuel (SFuel ZFuel))))
+(declare-fun MaxFuel () Fuel)
+(assert (= MaxFuel (SFuel (SFuel ZFuel))))
 ```
+~Fragment
 ```smt
 (assert (forall ((@f Fuel) (x Term))
         (implies (HasType x nat)
@@ -581,9 +580,12 @@ let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
                                 (factorial_fuel @f
                                      (op_Subtraction x (BoxInt 1)))))))))
 ```
+~
+~Fragment
 ```smt
 (assert (forall ((@x Term)) (= (factorial @x) (factorial_fuel MaxFuel @x))))
 ```
+~
 
 <!------------------------------------------------------------------------------>
 
@@ -605,7 +607,7 @@ let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
   - **monadic reification + monotonic state** and **relation to modal logic**
   - soundly allowing **subtyping for datatypes** (`list nat <: list int`)
 
-* {.fragment} **[Join the team at Inria Paris and Microsoft Research]{color:DarkRed;}**
+* {.fragment} **[Join the team at Inria Paris + Microsoft Research]{color:DarkRed;}**
 
 <!-- * {.fragment} **[Verified interoperability]{color:DarkBlue;}**: F\* (OCaml) + Low\* (C) + Vale (ASM)  -->
 

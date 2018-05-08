@@ -2,8 +2,14 @@ module InvariantsST
 
 open FStar.Ref
 
+type nlist = xs:list int{Cons? xs}
+
+let create (x:int) : St (ref nlist) = alloc #nlist [x]
+
+let add (x:int) (r:ref nlist) : St unit =  r := x :: !r
+
 let main() : St unit =
-  let r : ref nat = alloc 0 in
-  r := 1;
-  r := 2
-(*   r := -2 -- expected type Prims.nat; got type Prims.int *)
+  let r = create 1 in
+  add 2 r;
+  add 3 r
+  (* r := []  -- fails: expected type nlist; got type list int *)
