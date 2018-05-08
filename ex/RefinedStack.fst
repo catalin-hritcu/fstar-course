@@ -12,8 +12,8 @@ module RefinedStack
   let push x xs = Cons x xs
 
   abstract val pop : s:stack{~(is_empty s)} -> Tot stack
-  let pop = Cons?.tl
+  let pop s = Cons?.tl s
   
   abstract val top : s:stack{~(is_empty s)} -> Tot int
-  let top = Cons?.hd
- 
+  let top s = Cons?.hd s
+

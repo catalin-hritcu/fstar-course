@@ -16,7 +16,8 @@ module RefinedStackLength
 
   abstract val pop : s1:stack{length s1 > 0} ->
     Tot (s2:stack{length s2 = length s1 - 1})
-  let pop xs = Cons?.tl xs
+  let pop s = Cons?.tl s
 
   abstract val top : s:stack{length s > 0} -> Tot int
-  let top = Cons?.hd
+  let top s = Cons?.hd s
+
