@@ -65,7 +65,7 @@ val sum_st : n:nat -> ST nat (requires (fun h0      -> True))
 \
 ~Fragment
 ```
-(* WARNING: I will sometimes omit trivial preconditions on my slides, e.g.,  *)
+(* WARNING: I will omit trivial requires preconditions on my slides, e.g.,  *)
 
 val sum_st : n:nat -> ST nat (ensures (fun h0 x h1 -> x == sum_rec n /\
                                                       modifies !{} h0 h1))
@@ -474,18 +474,3 @@ POPL 2018
 <br />
 
 (see Snapshots.fst)
-
-<!------------------------------------------------------------------------------>
-
-## Schedule ##
-
-* C&#259;t&#259;lin: A Gentle Introduction to F\*:\
-  Verifying purely functional programs
-
-* C&#259;t&#259;lin: Verifying Stateful Programs in F\*
-
-* Danel: Monotonic State in F\*
-
-* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
-
-* Antoine: **Security verification and cryptographic modelling in F\***
