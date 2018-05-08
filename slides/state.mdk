@@ -79,6 +79,7 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
   STATE a (fun p h -> p (sel h r) h) = ...
      It's maybe still helps to illustrate modifies on very simple examples,
      although it's still quite debatable if the cheat is worth it.
+  TODO: maybe fix this; that would also match Danel's monotonic.mdk
 -->
 
 <!------------------------------------------------------------------------------>
@@ -260,3 +261,6 @@ let main() : St unit =
   add 3 r
   (* r := []  -- fails: expected type nlist; got type list int *)
 ```
+
+<!-- TODO: Danel thinks this is till not good enough;
+           he has anyway a better example on his slide (complex_procedure) -->

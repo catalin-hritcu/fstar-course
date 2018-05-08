@@ -621,5 +621,6 @@ got expression "s1" of type "Stack.stack"
 * Antoine: Security verification and cryptographic modelling in F*
 
 <!-- TODO: this whole part is targetted at functional programmers
-           - that was fine in Nancy, but it might be a problem elsewhere
+           - that was fine in Nancy and Aussois,
+             but it might be a problem elsewhere
 -->
