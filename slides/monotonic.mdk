@@ -119,7 +119,7 @@ complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
 
 2. Reasoning about various kinds of **counters**
 
-3. Reasoning about idealized (monotonic, insert-only) **logs**
+3. Reasoning about idealized monotonic **logs**
 
 4. Initializing and freezing **references** and **arrays**
 
@@ -185,7 +185,7 @@ let main() : St unit =
 ~
 ~Fragment
 ```
-(* Solution idea: observe that (fun j -> j > 0) is a stable predicate wrt <= *)
+(* Solution idea: Observe that (fun j -> j > 0) is a stable predicate wrt <= *)
 
 let stable (#a:Type) (p:predicate a) (rel:preorder a) 
   = forall (x y:a). p x /\ rel x y ==> p y
