@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : Monotonic State in F*
-Author        : Danel Ahman
+Author        : Danel Ahman, Catalin Hritcu
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -21,11 +21,11 @@ Package       : xypic
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
+**[Catalin Hritcu, Inria Paris](https://prosecco.gforge.inria.fr/personal/hritcu)**
 
-[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
+[Summer School on Verification Technology, Systems, and Applications (VSTA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
-Ohrid, Macedonia, 12 August, 2018
+University of Luxembourg on 1-2 July 2019
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }

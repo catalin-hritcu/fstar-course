@@ -2,20 +2,23 @@
 <head>
 <title>Program verification with F*</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link REL=STYLESHEET TYPE="text/css" href="danel.css">
 </head>
 <body>
 <h1>Program verification with F*</h1>
 
-<p>Course at <a href="https://sites.google.com/view/2018eutypesschool/home" target="_blank">2018 EUTypes Summer School on
-Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXTWGrNPU2" target="_blank">Ohrid, Macedonia</a> on 8-12 August, 2018</p>
+<p>Course at <a href="http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/" target="_blank">Summer School on Verification Technology, Systems, and Applications, VSTA 2019</a>
+at University of Luxembourg on 1-2 July 2019</p>
 
-<p><i>(Based on <a href="https://fstar-lang.org/#talks" target="_blank">past courses</a> by C&#259;t&#259;lin Hri&#355;cu and various other members of the F* team)</i></p>
+<p><b>Teaching team</b>: <a href="http://prosecco.gforge.inria.fr/personal/hritcu/">Cătălin Hriţcu</a> and Antoine Van Muylder</p>
+
+<p><b>Other contributors</b>: <a href="https://danel.ahman.ee/">Danel Ahman</a> and various other members of the F* team</p>
 
 <h2 id="schedule">Schedule</h2>
 
-<p>Friday, 10 August, 2018:</p>
+<p>Monday, 1 July 2019:</p>
 <ul>
-<li>10:30--11:30 <b>A Gentle Introduction to F*: Verifying Purely Functional Programs</b> (<a href="slides/out/pure-fun/pure-fun.html" target="_blank">slides</a>)</li>
+<li>9:00--10:30 <b>A Gentle Introduction to F*: Verifying Purely Functional Programs</b> (<a href="slides/out/pure-fun/pure-fun.html" target="_blank">slides</a>)</li>
 <ul>
 <li style="margin-top:5px"><b>Code:</b></li>
 <ul>
@@ -27,11 +30,8 @@ Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXT
 <li><b>Exercise 2:</b> Simply typed stacks (<a href="ex/Stack.fsti" target="_blank">Stack.fsti</a>, <a href="ex/Stack.fst" target="_blank">Stack.fst</a>, <a href="ex/StackClient.fst" target="_blank">StackClient.fst</a>; <a href="sol/Stack.fsti" target="_blank">solution 1</a>, <a href="sol/Stack.fst" target="_blank">solution 2</a>, <a href="sol/StackClient.fst" target="_blank">solution 3</a>)</li>
 <li style="margin-bottom:20px"><b>Exercise 3:</b> Refined stacks (<a href="ex/RefinedStack.fsti" target="_blank">RefinedStack.fsti</a>; <a href="sol/RefinedStack.fsti" target="_blank">solution 1</a>, <a href="sol/RefinedStack.fst" target="_blank">solution 2</a>, <a href="sol/RefinedStackClient.fst" target="_blank">solution 3</a>)</li>
 </ul>
-</ul>
 
-<p>Saturday, 11 August, 2018:</p>
-<ul>
-<li>16:30--17:30 <b>Verifying Stateful Programs with F*</b> (<a href="slides/out/state/state.html" target="_blank">slides</a>)</li>
+<li>11:00--12:30 <b>Verifying Stateful Programs with F*</b> (<a href="slides/out/state/state.html" target="_blank">slides</a>)</li>
 <ul>
 <li style="margin-top:5px">F*'s ML-style garbage-collected memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Heap.fst" target="_blank">FStar.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a></li>
 <li>F*'s low-level memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.fst" target="_blank">FStar.HyperStack.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.ST.fst" target="_blank">FStar.HyperStack.ST.fst</a></li>
@@ -48,12 +48,11 @@ Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXT
 <li><b>Exercise 3:</b> Stateful factorial (<a href="ex/FactorialST.fst" target="_blank">FactorialST.fst</a>; <a href="sol/FactorialST.fst" target="_blank">solution</a>)</li>
 <li style="margin-bottom:10px"><b>Exercise 4:</b> Experiment with the low-level memory model and extraction to C (see <a href="code/state/BufferAlloc.fst" target="_blank">BufferAlloc.fst</a>)</li>
 </ul>
-<li style="margin-bottom:20px">17:30--18:30 Exercise Class</li>
 </ul>
 
-<p>Sunday, 12 August, 2018:</p>
+<p>Tuesday, 2 July 2019:</p>
 <ul>
-<li>09:00--10:00 <b>Monotonic State in F*</b> (<a href="slides/out/monotonic/monotonic.html" target="_blank">slides</a>)</li>
+<li>14:00--15:30 <b>Monotonic State in F*</b> (<a href="slides/out/monotonic/monotonic.html" target="_blank">slides</a>)</li>
 <ul>
 <li style="margin-top:5px">F*'s witnessed modality: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fsti" target="_blank">FStar.Monotonic.Witnessed.fsti</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fst" target="_blank">FStar.Monotonic.Witnessed.fst</a></li>
 <li>F*'s monotonic ML-style memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Heap.fst" target="_blank">FStar.Monotonic.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Ref.fst" target="_blank">FStar.Ref.fst</a></li>
@@ -68,7 +67,7 @@ Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXT
 <li><b>Exercise 1:</b> Typing of initializable and freezable references read and freeze actions (<a href="ex/InitFreezeMST.fst" target="_blank">InitFreezeMST.fst</a>; <a href="sol/InitFreezeMST.fst" target="_blank">solution</a>)</li>
 <li style="margin-bottom:10px; width:700px"><b>Exercise 2:</b> Define a notion of initializable and freezable arrays (see the <a href="slides/out/monotonic/monotonic.html#/sec-exercise--initializable-and-freezable-arrays" target="_blank">lecture slides</a> for details; <a href="sol/InitFreezeArrayMST.fst" target="_blank">solution</a>)</li>
 </ul>
-<li>12:00--13:00 F*'s <b>Extensible Effect System and Metaprogramming in F*</b> (<a href="slides/out/effects/effects.html" target="_blank">slides</a>)</li>
+<li>16:00--17:30 F*'s <b>Extensible Effect System and Metaprogramming in F*</b> (<a href="slides/out/effects/effects.html" target="_blank">slides</a>)</li>
 <ul>
 <li style="margin-top:5px">F*'s extensible effect system; Dijkstra monads (for free) (<a href="https://www.fstar-lang.org/papers/mumon/" target="_blank">paper1</a>, <a href="https://www.fstar-lang.org/papers/dm4free/" target="_blank">paper2</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/dm4free" target="_blank">examples</a>)</li>
 <li>F*'s tactics and metaprogramming framework (<a href="https://arxiv.org/abs/1803.06547" target="_blank">paper</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/tactics" target="_blank">examples</a>)</li>
@@ -86,9 +85,11 @@ Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXT
 <li style="width:700px"><b>Exercise 3:</b> Define the READER effect, show that it is a sub-effect of the STATE effect defined in <a href="ex/SumReify.fst" target="_blank">SumReify.fst</a>, and demonstrate that the READER effect you defined is correct wrt STATE (<a href="ex/Reader.fst" target="_blank">Reader.fst</a>; <a href="sol/Reader.fst" target="_blank">solution</a>)</li>
 <li style="margin-bottom:10px; width:700px"><b>Exercise 4:</b> Try out F*'s metaprogramming and tactics framework, starting with <a href="code/effects/Logic.fst" target="_blank">Logic.fst</a>, and try to extend it to prove more interesting logical properties</li>
 </ul>
-<li style="margin-bottom:20px">15:00--16:00 Exercise Class</li>
 </ul>
 </ul>
+
+<h2 id="code">Code and exercises from slides</h2>
+<a href="https://github.com/catalin-hritcu/fstar-course/tree/vtsa2019">https://github.com/catalin-hritcu/fstar-course/tree/vtsa2019</a>
 
 <h2 id="setup">Setup instructions</h2>
 
@@ -101,7 +102,7 @@ We also have an
 </p>
 
 <p>
-For people who want to get F* (v0.9.6.0, most recent release)
+For people who want to get F* (v0.9.7.0-alpha1, most recent release)
 installed on their machine there are 2 easy options:
 <ol>
 <li> Using the <a href="https://fstar-lang.org/#download">
@@ -109,7 +110,8 @@ binary release</a>
 (<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#binary-releases">documentation on this</a>)
 </li>
 <li>or Using the <a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#opam-package">OPAM package</a>
-(especially for people already using OCaml; note that you still need to get Z3 separately)<br/>
+(especially for people already using OCaml; note that
+<a href="https://github.com/FStarLang/binaries/tree/master/z3-tested">in this case you still need to get Z3 separately</a>)<br/>
 </li>
 </ol>
 </p>
@@ -122,8 +124,7 @@ In addition, if you're familiar with emacs, we recommend getting
 <p style="margin-bottom:20px; width:800px">
 For people who are more motivated, there are even more ways including
 building F* from sources (see
-<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#building-f-from-sources">documentation on this</a>).<br/><br/>
-<sup>&dagger;</sup><i><b>Note:</b> Recent versions of F* use the [@expect_failure] attribute to denote the expectation of failing typechecking, while the v0.9.6.0 release uses the [@fail] attribute for the same purpose. Change this according to the version you use, e.g., this concerns <a href="code/pure-fun/Ackermann.fst" target="_blank">Ackermann.fst</a>.
+<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#building-f-from-sources">documentation on this</a>).
 </p>
 
 <h2 style="margin-bottom:-5px">More references</h2>

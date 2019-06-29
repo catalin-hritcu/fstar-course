@@ -17,5 +17,5 @@ clean:
 
 dist:
 	make -C slides
-	rsync -av --progress . /home/hritcu/Inria/www-hritcu/teaching/epit2018 --exclude '*.exe' --exclude 'code' --exclude 'ex' --exclude 'sol' --exclude 'Makefile*' --exclude '*~'
+	rsync -av --progress . /home/hritcu/Inria/www-hritcu/teaching/vtsa2019 --exclude '*.exe' --exclude 'code' --exclude 'ex' --exclude 'sol' --exclude 'Makefile*' --exclude '*~'
 	cd /home/hritcu/Inria/www-hritcu; make
