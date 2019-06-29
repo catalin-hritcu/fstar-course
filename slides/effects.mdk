@@ -16,7 +16,7 @@ Package       : xypic
 [INCLUDE=../../stuff/latex.tex]
 ~
 
-# F*'s effects, VCs, tactics, and SMT encoding #
+# F*'s effects, tactics, WPs, and SMT encoding #
 
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
@@ -310,7 +310,7 @@ Pure t (pre : Type0) (post : t->Type0)
 val factorial : x:int -> Pure int (requires (x >= 0)) (ensures (fun y -> y >= 0))
 ```
 ```
-val factorial : x:int -> Pure (fun k -> x >= 0 /\ forall y. y >= 0 ==> k y)
+val factorial : x:int -> PURE (fun k -> x >= 0 /\ forall y. y >= 0 ==> k y)
 ```
 ~Fragment
 Same for user-defined effects, like state:
