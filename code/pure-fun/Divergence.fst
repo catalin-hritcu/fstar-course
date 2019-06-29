@@ -28,5 +28,5 @@ val bar : unit -> Dv int
 let bar () = (1+2) + factorial (-1)
 
 (* this loops forever *)
-let main = eval (App (Lam 0 (App (Var 0) (Var 0)))
-                     (Lam 0 (App (Var 0) (Var 0))))
+let main () = eval (App (Lam 0 (App (Var 0) (Var 0)))
+                        (Lam 0 (App (Var 0) (Var 0))))

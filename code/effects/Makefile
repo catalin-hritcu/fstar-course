@@ -1,4 +1,6 @@
 include ../../Makefile.include
 
 all:
-	$(FSTAR) InitFreezeRefTactics.fst
+	$(FSTAR) IncrReify.fst
+	$(FSTAR) Logic.fst
+	$(FSTAR) NonInterference.fst

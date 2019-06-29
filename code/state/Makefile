@@ -11,6 +11,7 @@ all:
 	$(FSTAR) CountST.fst
 	$(FSTAR) FibonacciST.fst
 	$(FSTAR) InvariantsST.fst
+	$(FSTAR) BufferAlloc.fst
 
 swap:
 	$(MAKE) -C $(ULIB_ML)

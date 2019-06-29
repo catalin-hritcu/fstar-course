@@ -1,6 +1,7 @@
 include ../../Makefile.include
 
 all:
+	$(FSTAR) Ackermann.fst
 	$(FSTAR) Fact.fst
 	$(FSTAR) Fun.fst
 	$(FSTAR) Types.fst
@@ -15,6 +16,7 @@ all:
 	$(FSTAR) RefinedStack.fst
 	$(FSTAR) AbstractStack.fst
 	$(FSTAR) AbstractStackClient.fst
+	$(FSTAR) GhostCode.fst
 
 divergence:
 #	$(MAKE) -C $(ULIB_ML)

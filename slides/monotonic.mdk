@@ -23,9 +23,9 @@ Package       : xypic
 
 **[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
 
-[EPIT 2018 Spring School](http://projects.lsv.fr/epit18/)
+[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
 
-Aussois, France, 7-11 May 2018
+Ohrid, Macedonia, 12 August, 2018
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
@@ -34,77 +34,71 @@ Aussois, France, 7-11 May 2018
 
 ## Schedule ##
 
-* C&#259;t&#259;lin: A Gentle Introduction to F\*:\
-  Verifying purely functional programs
+* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
 
-* C&#259;t&#259;lin: Verifying Stateful Programs in F\*
+* Yesterday: Verifying Stateful Programs in F\*
 
-* **Danel: Monotonic State in F\***
+* **Today: Monotonic State in F\***
 
-* C&#259;t&#259;lin: Monadic effects in F\* and Dijkstra Monads; F\*'s SMT encoding
-
-* Antoine: Security verification and cryptographic modelling in F\*
-
-~Fragment
-Please ask questions any time!
-~
+* Today: F\*'s Extensible Effect System and Metaprogramming in F\*
 
 <!-------------------------------------------------------------------------------->
 
 ## State in F\*  ##
 
-```
-(* In the last lecture, you saw how to use F* to verify simple stateful programs, e.g., *)
+* So far we have seen how to use F* to verify simple stateful programs
+   ```
+   val sum_st : n:nat -> ST nat (requires (fun _       -> True))
+                                (ensures  (fun h0 x h1 -> x == sum_rec n /\
+                                                          modifies !{} h0 h1))
 
-val sum_st : n:nat -> ST nat (requires (fun h0      -> True))
-                             (ensures  (fun h0 x h1 -> x == sum_rec n /\
-                                                       modifies !{} h0 h1))
+   ```
 
-(* In this lecture, you will see that standard refs alone are often unsatisfactory *)
-```
-\
-~Fragment
-```
-(* WARNING: I will omit trivial requires preconditions on my slides, e.g.,  *)
+* {.fragment} But recall that [**standard references**]{color:DarkBlue} alone are often [**unsatisfactory**]{color:DarkRed}
 
-val sum_st : n:nat -> ST nat (ensures (fun h0 x h1 -> x == sum_rec n /\
-                                                      modifies !{} h0 h1))
-```
-~
+\ 
+
+* {.fragment} **Note:** I'll omit trivial requires clauses for readability
+  ```
+  val sum_st : n:nat -> ST nat (*(requires (fun _ -> True))*)
+                               (ensures  (fun h0 x h1 -> x == sum_rec n /\
+                                                         modifies !{} h0 h1))
+  ```
+
 
 <!------------------------------------------------------------------------------>
 
 ## Hello World (aka Monotonic Counters) ##
 
-```
-(* A simple interface to monotonic counters *)
+* A simple interface for monotonic counters
+  ```
+  val create: i:int ->
+                ST counter (ensures (fun h c h' -> fresh c h h' /\ ...))
+  val read: c:counter ->
+              ST int (ensures (fun h i h' -> sel h' c = i /\ h == h'))
+  val incr: c:counter ->
+              ST unit (ensures (fun h _ h' -> sel h' c = sel h c + 1 /\ ...))
+  ```
 
-val create: i:int     -> ST counter (ensures (fun h c h' -> fresh c h h' /\ ...))
-val read  : c:counter -> ST int     (ensures (fun h i h' -> sel h' c = i /\ h == h'))
-val incr  : c:counter -> ST unit    (ensures (fun h _ h' -> sel h' c = sel h c + 1 /\ ...))
-```
-~Fragment
-```
-(* An example program using monotonic counters *)
+* {.fragment} An example program using monotonic counters
+  ```
+  let main() : St unit =                   
+    let c = create 0 in
+    incr c;
 
-let main() : St unit = 
-  let c = create 0 in incr c;
+    let i = read c in assert (i > 0);
 
-  let i = read c in assert (i > 0);
-
-  complex_procedure c;                   (* complex_procedure : counter -> St unit *)
+    complex_procedure c;         (* complex_procedure : counter -> St unit *)
   
-  let j = read c in assert (j > 0)       (* (Error) assertion failed *)
-```
-~
-~Fragment
-```
-(* A naive but unsatisfactory fix for this particular example *)
+    let j = read c in assert (j > 0) (* (Error) assertion failed *)
+    ```
 
-complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
-                                         (ensures  (fun _ _ h' -> sel h' c > 0))
-```
-~
+<!--* {.fragment} A sound but naive and unsatisfactory fix for this particular example
+  ```
+  complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
+                                           (ensures  (fun _ _ h' -> sel h' c > 0))
+  ```-->
+
 
 <!------------------------------------------------------------------------------>
 
@@ -123,238 +117,218 @@ complex_procedure : c:counter -> ST unit (requires (fun h      -> sel h c > 0))
 
 4. Initializing and freezing **references** and **arrays**
 
-5. ...
+5. Modelling **ghost state** of protocols
+
+6. ...
 
 <!------------------------------------------------------------------------------>
 
 ## Monotonic State in F\* (part 1) ##
 
-```
-(* The main user-facing interface is monotonic references (see FStar.Monotonic.Heap) *)
+* The main user-facing interface is [monotonic references]{color:DarkBlue}
+  ```
+  type mref (a:Type0) (rel:preorder a) = ... (* defined using monotonicity *)
 
-type mref (a:Type0) (rel:preorder a) = ... (* if time, in the end of the lecture *)
+  (* where *)
 
-(* where *)
+  type relation (a:Type) = a -> a -> Type0
 
-type relation (a:Type) = a -> a -> Type0
+  type preorder (a:Type) = rel:relation a{
+    (forall (x:a). rel x x) /\
+    (forall (x y z:a). rel x y /\ rel y z ==> rel x z)}
+  ```
 
-type preorder (a:Type) = rel:relation a{
-  (forall (x:a). rel x x) /\ (forall (x y z:a). rel x y /\ rel y z ==> rel x z)}
-```
-~Fragment
-```
-(* Accompanied by stateful actions (see FStar.ST) *)
+* {.fragment} Accompanied by stateful actions [(again defined using monotonicity)]{color:Gray}
+  ```
+  val alloc : #a:Type0 -> #rel:preorder a -> init:a ->
+    ST (mref a rel) (ensures (fun h0 r h1 -> fresh r h0 h1 /\
+                                             sel h1 r == init /\ ...))
 
-val alloc : #a:Type0 -> #rel:preorder a -> init:a ->
-  ST (mref a rel) (ensures (fun h0 r h1 -> fresh r h0 h1 /\ sel h1 r == init /\ ...))
+  val (!) : #a:Type0 -> #rel:preorder a -> r:mref a rel ->
+    ST a (ensures (fun h0 x h1 -> h0 == h1 /\ sel h1 r == x))
 
-val (!) : #a:Type0 -> #rel:preorder a -> r:mref a rel ->
-  ST a (ensures (fun h0 x h1 -> h0 == h1 /\ sel h1 r == x))
-
-val (:=) : #a:Type0 -> #rel:preorder a -> r:mref a rel -> v:a ->
-  ST unit (requires (fun h0      -> rel (sel h0 r) v))         (* note the precondition *)
-          (ensures  (fun h0 _ h1 -> modifies !{r} h0 h1 /\ sel h1 r == v))
-```
-~
+  val (:=) : #a:Type0 -> #rel:preorder a -> r:mref a rel -> v:a ->
+    ST unit (requires (fun h0      -> rel (sel h0 r) v))      (* note this *)
+            (ensures  (fun h0 _ h1 -> modifies !{r} h0 h1 /\ sel h1 r == v))
+  ```
 
 
 <!------------------------------------------------------------------------------>
 
 ## Monotonic State in F\* (part 2) ##
 
-```
-(* We can now implement monotonic counters as follows *)
+* We can now implement monotonic counters as follows
+  ```
+  let counter = mref int (fun n m -> n <= m)
 
-let counter = mref int (fun n m -> n <= m)
+  let create i = alloc i                                   (* fresh c h h' *)
+  let read   c = !c                                        (* sel h' c = i *)
+  let incr   c = c := (!c + 1)                   (* sel h' c = sel h c + 1 *)
+  ```
 
-let create i = alloc i                                        (* fresh c h h' *)
-let read   c = !c                                             (* sel h' c = i *)
-let incr   c = c := (!c + 1)                                  (* sel h' c = sel h c + 1 *)
-```
-~Fragment
-```
-(* But by themselves these definitions are not enough to verify the example *)
+* {.fragment} By themselves these definitions are [not enough]{color:DarkRed} to verify the example
+  ```
+  let main() : St unit =                   
+    let c = create 0 in
+    incr c;
 
-let main() : St unit = 
-  let c = create 0 in incr c;
+    let i = read c in assert (i > 0);
+    complex_procedure c;                       (* c_p : counter -> St unit *)
+    let j = read c in assert (j > 0)           (* (Error) assertion failed *)
+  ```
 
-  let i = read c in assert (i > 0);
-  complex_procedure c;                   (* complex_procedure : counter -> St unit *)
-  let j = read c in assert (j > 0)       (* (Error) assertion failed *)
-```
-~
-~Fragment
-```
-(* Solution idea: Observe that (fun j -> j > 0) is a stable predicate wrt <= *)
+* {.fragment} **Idea:** observe that `(fun j -> j > 0)` is a stable predicate wrt. `<=`
 
-let stable (#a:Type) (p:predicate a) (rel:preorder a) 
-  = forall (x y:a). p x /\ rel x y ==> p y
-```
-~
-
-<!-- TODO:
-- Could do some nice exercises asking students whether a certain
-  predicate is stable under a certain relation
--->
+  ```
+  let stable (#a:Type) (p:predicate a) (rel:preorder a) = 
+    forall (x y:a). p x /\ rel x y ==> p y
+  ```
 
 <!------------------------------------------------------------------------------>
 
 ## Monotonic State in F\* (part 3) ##
 
-```
-(* To make easy use of this idea in verification, F* defines (in FStar.MRef): *)
-```
-~Fragment
-```
-(* A new pure proposition witnessing the validity of a stable predicate *)
+* To make use of monotonicity in verification, F\* defines the following:
 
-type token (#a:Type0) (#rel:preorder a) (r:mref a rel) (p:a -> Type0)
-```
-~
-~Fragment
-```
-(* Two stateful actions to witness and recall such tokens *)
+* {.fragment} A new **pure proposition** witnessing the validity of a stable predicate
+  ```
+  let token #a #rel (r:mref a rel) (p:a -> prop) : prop = ...  (* modality *)
+  ```
 
-val witness_token : #a:Type0 -> #rel:preorder a -> r:mref a rel -> p:(a -> Type0) -> 
-  ST unit (requires (fun h0      -> p (sel h0 r) /\ stable p rel))
-          (ensures  (fun h0 _ h1 -> h0 == h1 /\ token r p))
+* {.fragment} Two stateful actions to [**witness**]{color:DarkBlue} and [**recall**]{color:DarkBlue} such tokens (intro/elim)
+  ```
+  let witness_token #a #rel (r:mref a rel) (p:(a -> prop)) 
+    : ST unit (requires (fun h0      -> p (sel h0 r) /\ stable p rel))
+              (ensures  (fun h0 _ h1 -> h0 == h1 /\ token r p))
+  = ...
 
-val recall_token : #a:Type0 -> #rel:preorder a -> r:mref a b -> p:(a -> Type0) -> 
-  ST unit (requires (fun _       -> token r p))
-          (ensures  (fun h0 _ h1 -> h0 == h1 /\ p (sel h1 r)))
-```
-~
-~Fragment
-```
-(* As a bonus, we also have recall "for free" for existence of GCd references *)
+  let recall_token #a #rel (r:mref a rel) (p:(a -> prop)) 
+    : ST unit (requires (fun _       -> token r p))
+              (ensures  (fun h0 _ h1 -> h0 == h1 /\ p (sel h1 r)))
+  = ...
+  ```
 
-val recall : #a:Type0 -> #rel:preorder a -> r:mref a rel ->
-  ST unit (ensures (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r))
-```
-~
+* {.fragment} And as a bonus, recalling the containment of GCd references, [**"for free"**]{color:DarkRed}
+  ```
+  let recall_contains #a (#rel:preorder a) (r:mref a rel) 
+    : ST unit (ensures (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r))
+  = ...
+  ```
 
 <!------------------------------------------------------------------------------>
 
 ## Hello World (revisited) ##
-```
-(* Recall that we defined monotonic counters as follows *)
 
-let counter = mref int (fun n m -> n <= m)
+* Recall that we defined monotonic counters as follows
+  ```
+  let counter = mref int (fun n m -> n <= m)
 
-let create i = alloc i
-let read   c = !c
-let incr   c = c := (!c + 1)
-```
-~Fragment
+  let create i = alloc i
+  let read   c = !c
+  let incr   c = c := (!c + 1)
+  ```
 
-```
-(* Using witness_token and recall_token, we can finally verify the example *)
+* {.fragment} Using `witness_token` and `recall_token`, we can verify our example
+  ```
+  let main() : St unit =                   
+    let c = create 0 in incr c;
 
-let main() : St unit = 
-  let c = create 0 in incr c;
+    let i = read c in assert (i > 0);
+    witness_token c (fun i -> i > 0);
 
-  let i = read c in assert (i > 0);
+    complex_procedure c;                   (* c_p : counter -> St unit *)
+    
+    recall_token c (fun i -> i > 0);
+    let j = read c in assert (j > 0)       (* success *)
+    ```
 
-  witness_token c (fun i -> i > 0);
-  complex_procedure c;                   (* complex_procedure : counter -> St unit *)
-  recall_token c (fun i -> i > 0);
+
+<!------------------------------------------------------------------------------>
+
+## ML-style Typed References ##
+
+* Typed references from yesterday's lecture are just an instance of mrefs
+  ```
+  type ref a = mref a (fun _ _ -> True)
+  ```
+
+* {.fragment} We [can't make use of tokens based monotonicity]{color:DarkRed} any more
+  - all values of a `ref a` are now related
+  - so any stable predicate has to necessarily hold everywhere
+
+* {.fragment} But we [can still get heap-containment]{color:DarkBlue} "for free" for GCd refs
+  ```
+  let recall_contains #a (r:ref a)
+    : ST unit (ensures  (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r))
+
+  = MonotonicReferencesSlide.recall_contains r
+  ```
+
+<!------------------------------------------------------------------------------>
+
+## Simple Monotonic Logs ##
+
+* We model monotonic logs using monotonic references to lists of ints
+  ```
+  let subset (l1 l2:list int) = forall x . x `mem` l1 ==> x `mem` l2
   
-  let j = read c in assert (j > 0)       (* success *)
-```
-~
+  let lref = mref (list int) subset
+  ```
 
-<!------------------------------------------------------------------------------>
-
-## Typed References ##
-
-```
-(* Typed references from Catalin's lectures are just an instance of mrefs *)
-
-type ref a = mref a (fun _ _ -> True)
-```
-\ 
-~Fragment
-```
-(* While we can't use tokens any more, we still get containment "for free" for GCd refs *)
-
-let recall (#a:Type0) (r:ref a)
-  : ST unit (ensures  (fun h0 _ h1 -> h0 == h1 /\ h1 `contains` r))
-
-  = MonotonicStateSlide.recall r
-```
-~
-
-<!------------------------------------------------------------------------------>
-
-## Simple Monotonic Log ##
-
-```
-(* We model monotonic logs using monotonic references to lists of ints  *)
-
-let lref = mref (list int) subset
-
-(* where *)
-
-let subset (l1 l2:list int) = forall x . x `mem` l1 ==> x `mem` l2
-
-```
-~Fragment
-```
-(* Derived syntax for adding new elements to the log *)
-
-let add_to_log (r:lref) (v:int) : ST unit (ensures  (fun _ _ h -> v `mem` (sel h r)))
+* {.fragment} An action for adding new elements to the log
+  ```
+  let add_to_log (r:lref) (v:int)
+    : ST unit (ensures  (fun _ _ h -> v `mem` (sel h r)))
   = r := (v :: !r)
-```
-~
-~Fragment
-```
-let main() : St unit =
-  let r = alloc subset [] in add_to_log r 42;
-  
-  witness r (fun xs -> 42 `mem` xs);
-  complex_procedure r;                          (* complex_procedure : lref -> St unit *)
-  recall r (fun xs -> 42 `mem` xs);
+  ```
 
-  let xs = !r in assert (42 `mem` xs)
-```
-~
+* {.fragment} Can then use `witness_token` and `recall_token` again
+  ```
+  let main() : St unit =
+    let r = alloc subset [] in add_to_log r 42;
+    witness_token r (fun xs -> 42 `mem` xs);
+    
+    complex_procedure r;                         (* c_p : lref -> St unit *)
+    
+    recall_token r (fun xs -> 42 `mem` xs);
+    let xs = !r in assert (42 `mem` xs)          (* success *)
+  ```
 
 <!------------------------------------------------------------------------------>
 
 ## Initializing and Freezing references (part 1) ##
 
-```
-(* Contents of our initializable and freezable references (a value + a ghost state) *)
+* Contents of initializable and freezable references (value + ghost state)
+  ```
+  type rstate (a:Type0) =
+    | Empty   : rstate a
+    | Mutable : v:a -> rstate a
+    | Frozen  : v:a -> rstate a
+  ```
 
-type rstate (a:Type0) =
-  | Empty   : rstate a
-  | Mutable : v:a -> rstate a
-  | Frozen  : v:a -> rstate a
-```
-~Fragment
-```
-(* Defining a preorder for initialization and freezing *)
-
-let evolve' (a:Type0) = fun (r1 r2:rstate a) -> match r1 , r2 with
-  | Empty      , Mutable _
-  | Mutable _  , Mutable _ -> True
-  | Mutable v1 , Frozen v2 -> v1 == v2
-  | _          , _         -> False
+* {.fragment} Defining a preorder for initialization and freezing
+  ```
+  let evolve' (a:Type0) = fun (r1 r2:rstate a) -> match r1 , r2 with
+    | Empty      , Mutable _
+    | Mutable _  , Mutable _ -> True
+    | Mutable v1 , Frozen v2 -> v1 == v2
+    | _          , _         -> False
   
-let evolve (a:Type0) : preorder (rstate a) = evolve' a  (* (Error) *) (* Exercise: Why? *)
-```
-~
-~Fragment
-```
-  | Empty     , _
-  | Mutable _ , Mutable _
-  | Mutable _ , Frozen  _ -> True 
-  | Frozen v1 , Frozen v2 -> v1 == v2
-  | _         , _         -> False
-```
+  let evolve (a:Type0) : preorder (rstate a)   (* (Error) Subtyping failed *)
+  = evolve' a                                  (* Quiz: Why does it fail?  *)
+  ```
+
+* {.fragment} 
+  ```
+    | Empty     , _
+    | Mutable _ , Mutable _
+    | Mutable _ , Frozen  _ -> True 
+    | Frozen v1 , Frozen v2 -> v1 == v2
+    | _         , _         -> False
+  ```
 <!-- TODO: had a hand drawing on this on the board -->
 
-~
+
 
 <!------------------------------------------------------------------------------>
 
@@ -363,71 +337,88 @@ let evolve (a:Type0) : preorder (rstate a) = evolve' a  (* (Error) *) (* Exercis
 ```
 let eref (a:Type0) : Type = mref (rstate a) (evolve a)
 
-let alloc a : ST (eref a) (ensures  (fun _ r h -> Empty? (sel h r)))
-  = alloc (evolve a) Empty
 
-let read #a (r:eref a) : ST a (requires (fun h      -> ~(Empty? (sel h r))))
-                              (ensures  (fun h v h' -> h == h' /\
-                                                       (sel h r == Mutable v \/
-                                                        sel h r == Frozen v     )))
-  = match (!r) with | Mutable v | Frozen v -> v
+let alloc a : ST (eref a) (ensures  (fun _ r h -> Empty? (sel h r))) 
+=  alloc (evolve a) Empty
 
-let write #a (r:eref a) (v:a) : ST unit (requires (fun h     -> ~(Frozen? (sel h r))))
-                                        (ensures  (fun _ _ h -> sel h r == Mutable v))
-  = r := Mutable v
 
-let freeze #a (r:eref a) : (* Exercise: What is the type of freeze? *)
-  = r := Frozen (Mutable?.v !r)
+let read #a (r:eref a)
+  : ST a (requires (fun h      -> ~(Empty? (sel h r))))
+         (ensures  (fun h v h' -> h == h' /\
+                                  (sel h r == Mutable v \/
+                                   sel h r == Frozen v     )))
+= match (!r) with | Mutable v | Frozen v -> v
+  
+             (* Quiz: Can you give read a heap-independent precondition? *)
+
+
+let write #a (r:eref a) (v:a)
+  : ST unit (requires (fun h     -> ~(Frozen? (sel h r))))
+            (ensures  (fun _ _ h -> sel h r == Mutable v))
+= r := Mutable v
+
+let freeze #a (r:eref a) : St unit (* Exercise: Give precise type to freeze *)
+= r := Frozen (Mutable?.v !r)      (*           so that main() typechecks   *)
 ```
+<!--
 ~Fragment
 ```
-ST unit (requires (fun h0      -> Mutable? (sel h0 r)))
+ST unit (requires (fun h0 -> Mutable? (sel h0 r)))
 ```
 ~
 ~Fragment
 ```
-        (ensures  (fun h0 _ h1 -> Frozen? (sel h1 r) /\
-                                  Mutable?.v (sel h0 r) == Frozen?.v (sel h1 r)))
+  (ensures  (fun h0 _ h1 -> Frozen? (sel h1 r) /\
+                            Mutable?.v (sel h0 r) == Frozen?.v (sel h1 r)))
 ```
 ~
-
+-->
 
 <!------------------------------------------------------------------------------>
 
 ## Initializing and Freezing references (part 3) ##
 
-```
+<!--```
 let alloc  (a:Type)                   = alloc (evolve a) Empty
 let read   (#a:Type) (r:eref a)       = match (!r) with | Mutable v | Frozen v -> v
 let write  (#a:Type) (r:eref a) (v:a) = r := Mutable v
 let freeze (#a:Type) (r:eref a)       = r := Frozen (Mutable?.v !r)
-```
-~Fragment
+```-->
+
 ```
 let main() : St unit =
   let r = alloc int in
+  
   (* ignore (read r) -- fails like it should *)
+  
   write r 42;
   ignore (read r);
   write r 0;
-  witness r (fun rs -> ~(Empty? rs));
+  witness_token r (fun rs -> ~(Empty? rs));
   freeze r;
+  
   (* write r 7; -- fails like it should *)
+
   ignore (read r);
-  witness r (fun rs -> rs == Frozen 0);
+  witness_token r (fun rs -> rs == Frozen 0);
+  
   complex_procedure r;
+
   (* ignore (read r); -- fails like it should *)
-  recall r (fun rs -> ~(Empty? rs));
+
+  recall_token r (fun rs -> ~(Empty? rs));
   let x = read r in
-  (* assert (x == 0) -- fails like it should *)
-  recall r (fun rs -> rs == Frozen 0);
+  
+  (* assert (x == 0); -- fails like it should *)
+  
+  recall_token r (fun rs -> rs == Frozen 0);
   assert (x == 0)
 ```
-~
+
 
 <!------------------------------------------------------------------------------>
 
-## Homework: Initializable and Freezable Arrays ##
+## Exercise: Initializable and Freezable Arrays ##
 
 1. Arrays are created uninitialized
 
@@ -444,28 +435,86 @@ let main() : St unit =
   * no initialization preconditions for reading
 
 
+* Show this works as expected with client code similar to previous slide
 
 <!------------------------------------------------------------------------------>
 
-## Questions? ##
+## How the Sausage is Made (`MST`) ##
 
-<br /><br />
+* {.fragment} F\* standard library provides a [**global monotonic state**]{color:DarkBlue} effect (almost)
+  ```
+  MST #state #rel t (requires pre) (ensures post)     (* pre-post on state *)
+  ```
 
-For more information:
+* {.fragment} and a `witnessed` [**modality**]{color:DarkBlue} giving us a [**state-independent proposition**]{color:DarkRed}
+  ```
+  val witnessed : #st:Type -> #rel:(preorder st) -> (st -> prop) -> prop
+  ```
 
-<br />
+* {.fragment} together with corresponding `get`, `put`, `witness`, and `recall` actions
+  ```
+  val put : #state:Type -> #rel:(preorder state) -> s:state ->
+    MST #state #rel unit (requires (fun s0     -> rel s0 s))  (* note this *)
+                         (ensures  (fun _ _ s1 -> s1 == s))
+  ```
+~Fragment
+  ```
+  val witness : #state:Type -> #rel:(preorder state) -> p:(state -> prop) ->
+    MST #state #rel unit (requires (fun s0      -> p s0 /\ stable p rel))
+                         (ensures  (fun s0 _ s1 -> s0 == s1 /\
+                                                   witnessed #_ #rel p))
 
-D. Ahman, C. Fournet, C. Hritcu, K. Maillard, A. Rastogi, N. Swamy<br />
-**Recalling a Witness: Foundations and Applications of Monotonic State**<br />
-POPL 2018
+  val recall : #state:Type -> #rel:(preorder state) -> p:(state -> prop) ->
+    MST #state #rel unit (requires (fun _       -> witnessed #_ #rel p))
+                         (ensures  (fun s0 _ s1 -> s0 == s1 /\ p s1))
+  ```
+~
 
 <!------------------------------------------------------------------------------>
 
-## Bonus Material: How the Sausage is Made ##
+## How the Sausage is Made (`ST`, much simplified) ##
 
-<br />
+  ```
+  ST t (requires pre) (ensures post) = MST #heap #heap_rel (requires pre)
+                                                           (ensures post)
+  ```
 
-(see FStar.Monotonic.Heap, FStar.ST, and FStar.MRef)
+* {.fragment} For (monotonic) heaps we use the natural functional representation
+  ```
+  type heap_rec = {
+   next_addr: nat;
+   memory   : x:nat -> Tot (option (a:Type0 & rel:(option (preorder a)) & a))
+  }
+  
+  let heap = h:heap_rec{(forall n. n >= h.next_addr ==> None? (h.memory n))}
+  ```
+
+* {.fragment} `heap_rel` is [**heap-inclusion**]{color:DarkBlue} + [**relatedness by the individual preorders**]{color:DarkRed}
+
+* {.fragment} (Monotonic) references are represented by their addresses
+  ```
+  abstract type mref' (a:Type0) (rel:preorder a) = { addr:nat; init:a }
+
+  type mref (a:Type0) (rel:preorder a) 
+  = mref' a rel{witnessed (fun h -> h `contains` r)}
+  ```
+
+* {.fragment} `alloc`, `!`, `:=`, `tokens` are derived from `MST` actions and `witnessed`
+
+
+<!------------------------------------------------------------------------------>
+
+## Next in this course ##
+
+* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
+
+* Yesterday: Verifying Stateful Programs in F\*
+
+* Today: Monotonic State in F\*
+
+* **Today: F\*'s Extensible Effect System and Metaprogramming in F\***
+
+
 
 <!------------------------------------------------------------------------------>
 

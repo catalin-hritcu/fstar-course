@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : Program Verification with F*
-Author        : Catalin Hritcu
+Author        : Danek Ahman
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -16,58 +16,47 @@ Package       : xypic
 [INCLUDE=../../stuff/latex.tex]
 ~
 
-# F*'s effects, tactics, WPs, and SMT encoding #
+# F\*'s Extensible Effect System<br/>and<br/>Metaprogramming in F\*  #
 
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[C&#259;t&#259;lin Hri&#355;cu, Inria Paris](http://prosecco.gforge.inria.fr/personal/hritcu/)**
+**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
 
+[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
 
-[EPIT 2018 Software Verification Spring School](http://projects.lsv.fr/epit18/)
-
-Aussois, France on 8 May, 2018
+Ohrid, Macedonia, 12 August, 2018
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
 
+<!-------------------------------------------------------------------------------->
 
-<!------------------------------------------------------------------------------>
+## Schedule ##
 
-## Functional core of F\* ## {#fcore}
+* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
 
-* **[Variant of dependent type theory]{color:DarkBlue}**
-  - $\lambda$, $\Pi$, inductives, matches, universe polymorphism
+* Yesterday: Verifying Stateful Programs in F\*
 
-* **[Recursion and semantic termination check]{color:DarkRed}**
-  - potential non-termination is an effect
+* Today: Monotonic State in F\*
 
-* **[Refinements]{color:DarkRed}**
-  - **Refined value types**: `x:t{p}`
-  - **Refined computation types**: `Pure t pre post`
-  - computationally and proof irrelevant, discharged by SMT
-
-* **[Subtyping and sub-effecting]{color:DarkRed}**,
-  **[Extensional equality]{color:DarkRed}**
+* **Today: F\*'s Extensible Effect System and Metaprogramming in F\***
 
 <!------------------------------------------------------------------------------>
 
 ## This talk ##
 
-* **Monadic effects in F***
+* **Monadic effects** in F\*
 
-* **Tactics** as a user-defined, non-primitive effect
+* [**Verifying effectful programs extrinsically**]{color:DarkBlue} (monadic reification)
 
-* **Under the hood:** Weakest pre-conditions (and Dijkstra monads, for free)
+* [**Under the hood:**]{color:DarkRed} Weakest preconditions (and Dijkstra monads)
 
-* **Under the hood:** F* to SMT encoding
-
-<!-- commented out because of lack of time -->
-<!-- * **Verifying effectful programs extrinsically** (monadic reification) -->
+* [**Tactics**]{color:DarkGreen} and [**Metaprogramming**]{color:DarkGreen} as a user-defined, non-primitive effect
 
 <!------------------------------------------------------------------------------>
 
-## Monadic effects in F\* ##
+## Monadic effects in F\*: Global State ##
 
 <!-- Effects defined using monads from total functions -->
 ```
@@ -77,13 +66,22 @@ type st (mem:Type) (a:Type) = mem -> Tot (a * mem)
 ~Fragment
 ```
 total reifiable new_effect {
- STATE_m (mem:Type) : a:Type -> Effect
- with repr = st mem;
-      return = fun (a:Type) (x:a) (m:mem) -> x, m;
-      bind = fun (a b:Type) (f:st mem a) (g:a -> st mem b) (m:mem) ->
-             let z, m' = f m in g z m';
-      get = fun () (m:mem) -> m, m;
-      put = fun (m:mem) _ -> (), m  }
+  STATE_m (mem:Type) : a:Type -> Effect
+ 
+  with (* functional representation of the global state effect *)
+       repr   = st mem;
+
+       (* standard monadic return and bind for the state monad *)
+       return = fun (a:Type) (x:a) (m:mem) -> (x, m);
+       
+       bind   = fun (a b:Type) (f:st mem a) (g:a -> st mem b) (m:mem) ->
+                let (z, m') = f m in
+                g z m';
+
+       (* standard get and put actions for the state monad *)
+       get    = fun () (m:mem) -> (m, m);
+       put    = fun (m:mem) _ -> ((), m)
+}
 ```
 ```
 total reifiable new_effect STATE = STATE_m heap
@@ -91,236 +89,142 @@ total reifiable new_effect STATE = STATE_m heap
 ~
 
 * {.fragment} this monadic definition is the **model** F\*  uses to verify stateful code
-* {.fragment} state can be **primitively implemented** under the hood **or not**
-  - for instance by ML heap or C stack+heap
-
-<!------------------------------------------------------------------------------>
-
-## Monadic lifts in F* ##
-
-State and exception monad
-```
-let stexn a = nat -> Tot ((either a string) * nat))
-```
-```
-new_effect {
-  STEXN: a:Type -> Effect with
-    repr    = stexn;
-    return  = fun (a:Type) (x:a) s -> Inl x, s;
-    bind    = fun (a b:Type) (f:stexn a) (g:a -> stexn b) s0 ->
-                 let (r,s1) = f s0 in
-                 match r with
-                 | Inl ret -> Inl (g ret s1), s1
-                 | Inr m -> Inr m, s1
-    raise   = fun (a:Type) (msg:string) s -> Inr msg, s
-}
-```
-```
-sub_effect STATE ~> STEXN {
-  lift = fun (a:Type) (e:st nat a) -> (fun s -> let (x,s') = e s in Inl x, s')
-}
-```
+* {.fragment} state can be **primitively implemented** under the hood, **or not**
 
 <!------------------------------------------------------------------------------>
 
 ## Programming with effects, in direct style ##
 
-* In F\*, the programmer writes:
+* In F\* the programmer writes:
   ```
-  let incr () =
-      let x = STATE.get() in
-      STATE.put (x + 1);
-      let y = STATE.get() in
-      assert (y > x)
+  let incr_and_assert () : STATE unit user_spec = 
+    let x = get() in
+    put (x + 1);
+    assert (get() > x)
   ```
 
-* {.fragment} Made explicitly monadic via type and effect inference
+* {.fragment} Which is then made explicitly monadic via type and effect inference:
 
   ```
-  let incr () =
+  let incr_and_assert () : STATE unit inferred_spec = 
     STATE.bind (STATE.get ()) (fun x -> 
     STATE.bind (STATE.put (x + 1)) (fun _ ->
     STATE.bind (STATE.get ()) (fun y ->
     STATE.return (assert (y > x)))))
   ```
 
+* {.fragment} And the SMT-solver is asked to discharge the VC to typecheck it
+  ```
+  forall s0 k. user_spec s0 k ==> inferred_spec s0 k
+  ```
+
 <!------------------------------------------------------------------------------>
 
-## Programming with multiple effects
+## Monadic lifts in F*: State + Exceptions ##
 
-* Programmer writes:
+```
+let stexn a = nat -> Tot ((either a string) * nat))
+```
+~Fragment
+```
+new_effect {
+  STEXN: a:Type -> Effect
+  with (* functional representation of the sum of state and exceptions monads *)
+       repr    = stexn;
+
+       (* standard monadic return and bind *)
+       return  = fun (a:Type) (x:a) s0 -> (Inl x, s0);
+       
+       bind    = fun (a b:Type) (f:stexn a) (g:a -> stexn b) s0 ->
+                    let (r,s1) = f s0 in
+                    match r with
+                    | Inl ret -> g ret s1
+                    | Inr m -> (Inr m, s1)
+
+       (* action of raising exceptions *)
+       raise   = fun (a:Type) (msg:string) s0 -> (Inr msg, s0);
+}
+```
+~
+~Fragment
+```
+sub_effect STATE ~> STEXN {
+  lift = fun (a:Type)
+             (e:st nat a)                               (* st comp. *)
+         ->
+             fun s -> let (x,s1) = e s0 in (Inl x, s1)  (* stexn comp. *) }
+```
+~
+
+<!------------------------------------------------------------------------------>
+
+## Programming with multiple effects, in direct style
+
+* In F\* the programmer writes:
   ```
-    ( / ) : int -> x:int{x<>0} -> Tot int
-    let divide_by (x:int) : STEXN unit ...
-      = if x <> 0 then put (get () / x) else raise "Divide by zero"
+  ( / ) : int -> x:int{x<>0} -> Tot int
+    
+  let divide_by (x:int) : STEXN unit user_spec
+    = if x <> 0 then put (get () / x)
+                else raise "Divide by zero"
   ```
 
-* {.fragment}Elaborated to:
+* {.fragment} Which is then elaborated to:
   ```
-    let divide_by x = 
-      if x <> 0 then STATE_STEXN.lift (STATE.bind (STATE.get())
-                                        (fun n -> STATE.put (n / x)))
-      else STEXN.raise "Divide by zero"
+  let divide_by (x:int) : STEXN unit inferred_spec
+    = if x <> 0 then STATE_STEXN.lift (STATE.bind (STATE.get()) (fun n ->
+                                       STATE.put (n / x)))
+                else STEXN.raise "Divide by zero"
   ```
 
-* {.fragment}F\* infers the least effect of each sub-term
+* {.fragment} And the SMT-solver is asked to discharge the VC to typecheck it
+  ```
+  forall s0 k. user_spec s0 k ==> inferred_spec s0 k
+  ```
+
+<!--* {.fragment}F\* infers the least effect of each sub-term
     - automatically lifts computations to use the suitable effect
-    - ensures that reasoning isn't needlessly polluted by unused effects
-
-<!------------------------------------------------------------------------------>
-
-<!-- ## Verifying effectful programs extrinsically ## -->
-
-<!-- <\!-----------------------------------------------------------------------------\-> -->
-
-<!-- ## Verifying effectful programs ## {#effect2} -->
-<!-- ### New way: extrinsically (by exposing pure monadic representation) ### -->
-
-<!-- * {.fragment} Monadic reification (intuitively) -->
-<!--     ``` -->
-<!--     STATE.reify : (St a) -> Ghost (nat -> Tot (a * nat)) -->
-<!--     ``` -->
-
-<!-- <\!-- reify only when the abstraction permits (e.g. ghost code) -\-> -->
-
-<!-- * {.fragment} Allows us to give **weak specification** to an effectful function -->
-<!--   ``` -->
-<!--     let incr (r:ref nat) : St unit = (r := (!r + 1)) -->
-<!--   ``` -->
-
-<!-- * {.fragment} and **prove lemmas about reification** of effectful computation -->
-<!--   ``` -->
-<!--     let incr_works (r:ref nat) (h:heap) : -->
-<!--       Lemma (sel (snd (STATE.reify (incr r) h)) r = sel h r + 1) = () -->
-<!--   ``` -->
-
-<!-- <\!-- TODO: try out this code -\-> -->
-
-<!-- <\!-- STATE.reify (e : ST a pre post) -\-> -->
-<!-- <\!--   : n0:nat -> Pure (a * nat) (requires (pre n0)) -\-> -->
-<!-- <\!--                              (ensures (fun r -> post n0 (fst r) (snd r)) -\-> -->
-
-<!-- <\!-----------------------------------------------------------------------------\-> -->
-
-<!-- ## Reification works very well ## -->
-
-<!-- * **Reducing effectful verification to pure verification** -->
-<!--     - for which F* already has good support (i.e. SMT automation) -->
-
-<!-- * **Recent experiments using this for "relational verification"** -->
-<!--     - Correctness of program transformations -->
-<!--     - Information flow control -->
-<!--     - Proofs of algorithmic optimizations (memoization, union-find) -->
-<!--     - Simple game-based cryptographic proofs -->
-
-<!------------------------------------------------------------------------------>
-
-## Tactics as a user-defined, non-primitive effect ##
-
-<!------------------------------------------------------------------------------>
-
-## Tactics (New, Experimental) ##
-
-* F\* tactics written as **effectful F\* code** (inspired by Lean, Idris)
-
-* have **access to F\*'s proof state** (and can efficiently roll it back)
-
-* can **introspect on F\* terms** (deep embedding, simply typed)
-
-* can be **[interpreted]{color:DarkRed}** by F\*'s normalizer or **[compiled to OCaml]{color:DarkGreen}**
-
-* {.fragment} **user-defined, non-primitive effect**: proof state + exceptions monad
-
-    ```
-    noeq type __result a =
-        | Success of a * proofstate
-        | Failed  of string    //error message
-                  * proofstate //the proofstate at time of failure
-
-    let __tac (a:Type) = proofstate -> Tot (__result a)
-
-    reifiable reflectable new_effect {
-      TAC : a:Type -> Effect
-      with repr     = __tac   ... }
-
-    let tactic (a:Type) = unit -> Tac a
-    ```
-
-<!------------------------------------------------------------------------------>
-
-## Tactics can discharge verification conditions (replacing SMT) ##
-
-~Center
-![tactics-assert_by_tactic]
-~
-[tactics-assert_by_tactic]: ../../stuff/tactics-assert_by_tactic.png { heigth=50% }
-
-<!------------------------------------------------------------------------------>
-
-
-## Tactics can massage verification conditions (complementing SMT) ##
-
-~Center
-![tactics-canon]
-~
-[tactics-canon]: ../../stuff/tactics-canon.png { heigth=50% }
-
-<!------------------------------------------------------------------------------>
-
-## Tactics can synthesize F\* terms (metaprogramming) ##
-
-~Center
-![tactics-synth_by_tactic]
-~
-[tactics-synth_by_tactic]: ../../stuff/tactics-synth_by_tactic.png { heigth=50% }
-
-<!------------------------------------------------------------------------------>
-
-## Some uses of tactics ##
-
-* **Reflective tactics for arithmetic** (proof automation)
-
-* **Bitvectors in Vale** (proof automation)
-
-* **Separation logic** (proof automation)
-
-* **Pattern matcher** (metaprogramming)
-
-* **Efficient parsers and printers** (metaprogramming)
-
+    - ensures that reasoning isn't needlessly polluted by unused effects-->
 
 <!------------------------------------------------------------------------------>
 
 ## Under the hood ##
 
-### Weakest pre-conditions (Dijkstra monads for free) ###
+### Weakest preconditions (Dijkstra monads (for free)) ###
 
-### SMT encoding ###
+<!-- ### SMT encoding ### -->
 
 <!------------------------------------------------------------------------------>
 
-## Computation types indexed by predicate transformers ##
+## Computation types indexed by [predicate transformers]{color:DarkBlue} ##
 
-Pre- and post- conditions are just syntactic sugar:
+Pre- and postconditions are just syntactic sugar:
 ```
-Pure t (pre : Type0) (post : t->Type0)
-  = PURE t (fun k -> pre /\ forall y. post y ==> k y)
-```
-```
-val factorial : x:int -> Pure int (requires (x >= 0)) (ensures (fun y -> y >= 0))
-```
-```
-val factorial : x:int -> PURE (fun k -> x >= 0 /\ forall y. y >= 0 ==> k y)
+Pure t (pre : Type0) (post : t -> Type0)
+  = PURE t (fun k -> pre /\ (forall y. post y ==> k y))
+                        (* where k is the "true" postcondition,  
+                           for which we compute the weakest precondition *)
 ```
 ~Fragment
-Same for user-defined effects, like state:
+```
+val factorial : x:int -> Pure int (requires (x >= 0))
+                                  (ensures  (fun y -> y >= 0))
+```
+```
+val factorial : x:int -> PURE int (fun k -> x>=0 /\ (forall y. y>=0 ==> k y))
+```
+~
+~Fragment
+Same for user-defined effects, like `STATE`:
 ```
 ST t (pre : nat -> Type0) (post : nat -> t -> nat -> Type0) 
-  = STATE t (fun n0 k -> pre n0 /\ forall x n1. post n0 x n1 ==> k x n1)
+  = STATE t (fun n0 k -> pre n0 /\ (forall x n1. post n0 x n1 ==> k x n1))
 ```
+~
+~Fragment
 ```
 val incr : unit -> St unit (requires (fun n0 -> True))
-                           (ensures (fun n0 _ n1 -> n1 = n0 + 1))
+                           (ensures  (fun n0 _ n1 -> n1 = n0 + 1))
 ```
 ```
 val incr : unit -> STATE unit (fun n0 k -> k () (n0 + 1))
@@ -332,65 +236,75 @@ val incr : unit -> STATE unit (fun n0 k -> k () (n0 + 1))
 let incr () = STATE.bind (STATE.get()) (fun x -> STATE.put (x + 1))
 ```
 * {.fragment} By inferring type for `incr` against following interface:
-```
-STATE.get : unit -> STATE nat (STATE.get_wp())
-STATE.put : n:nat -> STATE unit (STATE.put_wp n)
-STATE.bind : STATE 'a 'wa ->
-             (x:'a -> STATE 'b ('wb x)) ->
-             STATE 'b (STATE.bind_wp 'wa 'wb)
-```
-... we compute the weakest precondition for `incr`
-```
-val incr : unit -> STATE unit
-  (STATE.bind_wp (STATE.get_wp()) (fun x -> STATE.put_wp (x + 1)))
-```
-```
-= (fun n0 k -> k () (n0 + 1)) 
-```
-* {.fragment} **Generic way of computing weakest-preconditions for all effects**,
-provided we have a monad on predicate transformers
+  ```
+  STATE.get : unit -> STATE nat (STATE.get_wp ())
+  
+  STATE.put : n:nat -> STATE unit (STATE.put_wp n)
+  
+  STATE.bind : STATE 'a 'wa -> (x:'a -> STATE 'b ('wb x)) ->
+                                             STATE 'b (STATE.bind_wp 'wa 'wb)
+  ```
+... F\* computes the weakest precondition for `incr`
+  ```
+  val incr : unit -> STATE unit inferred_wp
+  ```
+  ```
+  inferred_wp = STATE.bind_wp (STATE.get_wp()) (fun x -> STATE.put_wp (x+1))
+              = fun n0 k -> k () (n0 + 1)
+  ```
+* {.fragment} **Generic way of computing weakest-preconditions for all effects**
+  - provided we have a monad structure on predicate transformers
+  - [instance of a more general structure of monad-graded monads]{color:DarkGray}
 
 ## Predicate transformers monad for state ## 
 
-### aka Dijkstra monad ###
+### aka a Dijkstra monad for state ###
 
 ```
 let STATE.wp t = (t -> nat -> Type0) -> (nat -> Type0)
+
 val STATE.return_wp : 'a -> Tot (STATE.wp 'a)
-val STATE.bind_wp : (STATE.wp 'a) ->
-                    ('a -> Tot (STATE.wp 'b)) ->
-                      Tot (STATE.wp 'b)
+
+val STATE.bind_wp : (STATE.wp 'a) -> ('a -> Tot (STATE.wp 'b)) ->
+                                                          Tot (STATE.wp 'b)
+                      
 val STATE.get_wp : unit -> Tot (STATE.wp nat)
 val STATE.put_wp : nat -> Tot (STATE.wp unit)
 ```
-* we need to implement this Dijkstra monad:
+* whose implementation is given by:
 ```
 let STATE.return_wp v = fun p -> p v
 let STATE.bind_wp wp f = fun p -> wp (fun v -> f v p)
 let STATE.get_wp () = fun p n0 -> p n0 n0
 let STATE.put_wp n = fun p _ -> p () n
 ```
-* and for a while we wrote such things by hand;\
-but this is **quite tricky** and comes with **strong proof obligations**\
-(correctness with respect to effect definition, monad laws, ...)
+* {.fragment} and for a while we wrote such things by hand for each new effect;\
+
+* {.fragment} but this is **quite tricky** and comes with **strong proof obligations**\
+  (correctness with respect to effect definition, monad laws, ...)
 
 ## Dijkstra monads for free ## {#dm4f}
 
 ```
 STATE.wp t  = (t -> nat -> Type0) -> (nat -> Type0)
+
            ~= nat -> (t * nat -> Type0) -> Type0
 ```
-* {.fragment} **This can be *automatically derived* from the state monad**
+* {.fragment} This can be **automatically derived** from the [**state monad transformer**]{color:DarkBlue}
 ```
-STATE.repr t = nat -> t * nat
+STATE.repr t = nat -> M (t * nat)
 ```
-by selective **continuation-passing style (CPS)** returning `Type0`
+by selective **continuation-passing style (CPS)** translation
+  - `M` is the monad-argument of the monad transformer
+  - it marks where the CPS-translation happens
+  - type system (conservatively) restricts where the marker `M` can appear
 
-* {.fragment} **This works well for large class of monadic effects:**\
-state, exceptions, continuations, etc.
+* {.fragment} This works well for **many natural examples** of monadic effects:\
+  - `STATE`, `EXN`, `STEXN`, `CONT`, etc. (explicitly definable monad transformers)
+  - {.fragment} [ongoing work to try to extend this idea to a wider class of effects]{color:DarkGray}
 
-* {.fragment} From monadic effect definition we can derive a\
-**correct-by-construction weakest-precondition calculus** for this effect.
+* {.fragment} **Summary:** From a monadic effect definition we can derive a\
+  [**correct-by-construction weakest-precondition calculus**]{color:DarkBlue} for this effect.
 
 <!-- commented this out because of lack of time -->
 <!-- TODO: take slides 8--12 and 14 from Guido's POPL talk -->
@@ -464,151 +378,223 @@ state, exceptions, continuations, etc.
 
 <!------------------------------------------------------------------------------>
 
-# From F\* to SMT # {#fstar2smt}
-
 <!------------------------------------------------------------------------------>
 
-## SMT encoding ## {#smtencoding}
+## Verifying effectful programs extrinsically ##
+### [**Monadic reification**]{color:DarkBlue} and [**monadic reflection**]{color:DarkRed} ###
 
-- F* verification conditions
-  + **classical, dependently typed, higher-order logic**
+<!-- <\!-----------------------------------------------------------------------------\-> -->
 
-- {.fragment}We encode this to SMT
-  + **FOL + equality and function symbols + arithmetic + e-matching **
-  + goals: **soundness**, **predictability**, **efficiency**, **scalability**
-  + pragmatic balance between **completeness** and **practical tractability**
+## Verifying effectful programs ##
+### New way: [**extrinsically**]{color:DarkRed} (by exposing pure monadic representation) ###
 
-- {.fragment}The encoding
-  + **preserves types**
-  + combines a **deep and a shallow embedding** of F* terms
-  + allows **bounded unrolling** of recursive and inductive definitions
-  + eliminates first-class functions by **lambda lifting**
-  + uses **SMT-patterns** extensively to guide instantiation of quantifiers
-  + currently targets only Z3 (but some early experiments with CVC4)
-
-<!------------------------------------------------------------------------------>
-
-## Encoding primitive operations and types ##
-
-* [Primitive types]{color=Black;} (booleans, integers...) are boxed
-
-  ```smt
-  (declare-sort Term)
-
-  (declare-fun BoxInt (Int) Term)
-  (declare-fun BoxInt_proj (Term) Int)
-  (assert (forall ((@x Int)) (= (BoxInt_proj (BoxInt @x)) @x))) 
- 
-  (declare-fun Prims.int () Type)
-  (assert (forall ((@x Int)) (HasType (BoxInt @x) Prims.int))))
+* {.fragment} [**Monadic reification**]{color:DarkBlue}
   ```
-  
-  Operators are given shallow semantics: 
-  ```smt
-   (assert (forall ((@x Term) (@y Term))
-     (= (op_Subtraction @x @y) (BoxInt (- (BoxInt_proj @x) (BoxInt_proj @y))))))
-   ```
+  STATE.reify : (St a) -> (nat -> Tot (a * nat))
+  ```
+
+* {.fragment} [**Monadic reflection**]{color:DarkRed} takes us in the other direction
+  ```
+  STATE.reflect : (nat -> Tot (a * nat)) -> (St a)
+  ```
+
+\ 
+
+* {.fragment} The above types are very much simplified, in their full generality:
+  - `reify` sends a `STATE` comp. with a **WP** to a `PURE` comp. with a **WP**
+  - `reflect` sends a `PURE` comp. with a **WP** to a `STATE` comp. with a **WP**
 
 <!------------------------------------------------------------------------------>
 
-## Typechecking factorial ##
-```
-type nat = x:int{x>=0}
-let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
-```
-* {.fragment}Encoding type `nat`:
-```smt
-(assert (forall ((@x Term))
-  (iff (HasType @x nat) (and (HasType @x int) (>= (BoxInt_proj @x) 0)))))
-```
-* {.fragment}Proving termination:
-```smt
-(declare-fun n () Term)
-(assert (not (implies (and (HasType n nat) (not (= n (BoxInt 0))))
-                      (Valid (Precedes (op_Subtraction n (BoxInt 1)) n)))))
-```
-* {.fragment}Can be proved because of this axiom:
-```smt
-(assert (forall ((@x Term) (@y Term))
-           (implies (and (HasType @x nat) (HasType @y nat)
-                         (< (BoxInt_proj @x) (BoxInt_proj @y)))
-                    (Valid (Precedes @x @y)))))
-```
+## [Extrinsic reasoning]{color:DarkGreen} using reification and reflection ##
 
-<!------------------------------------------------------------------------------>
+* [**Reification**]{color:DarkBlue} allows us to give **weak specification** to a program
+  ```
+  let incr () : St unit = STATE?.put (STATE?.get() + 1)
+  ```
 
-## Typechecking factorial (2) ##
-```
-type nat = x:int{x>=0}
-let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
-```
-* {.fragment}Return value is `nat`
-```smt
-(declare-fun n () Term)
-(assert (HasType n nat))
-(assert (forall ((@x Term))
-                (implies (and (HasType @x nat) (Valid (Precedes @x n)))
-                         (HasType (factorial @x) nat))))
-```
-```smt
-(assert (not (ite (BoxBool_proj (op_Equality int n (BoxInt 0)))
-                  (>= 1 0)
-                  (>= (BoxInt_proj (op_Multiply n
-                        (factorial (op_Subtraction n (BoxInt 1))))) 0 ))))
-```
+* {.fragment} and give an **extrinsic proof** of their correctness
+  ```
+  let lemma_incrs (s0:state)
+    : Lemma (let (_,s1) = reify (incr ()) s0 in 
+             s1 = s0 + 1)
+  = ()
+  ```
 
-<!------------------------------------------------------------------------------>
+* {.fragment} [**Reflection**]{color:DarkRed} allows us to write some code as pure 
+  ```
+  let incr' (): St unit = STATE?.put (STATE?.reflect (fun s0 -> (s0,s0)) + 1)
+  ```
 
-## Allowing SMT solver to do bounded unrolling ##
-```
-type nat = x:int{x>=0}
-let rec factorial (n:nat) : nat = if n = 0 then 1 else n * (factorial (n - 1))
-```
-```smt
-(declare-datatypes () ((Fuel (ZFuel) (SFuel (prec Fuel)))))
-(declare-fun MaxFuel () Fuel)
-(assert (= MaxFuel (SFuel (SFuel ZFuel))))
-```
+* {.fragment} and it **cancels out** reification in verification
+  ```
+  let lemma_incrs' (s0:state)
+    : Lemma (let (_,s1) = reify (incr' ()) s0 in 
+             s1 = s0 + 1)
+  = ()
+  ```
+
+
+## [Extrinsic reasoning]{color:DarkGreen} using reification and reflection ctd. ##
+
+* It also allows us to reason about **different runs** of the **same program**
+  ```
+  let state = int * int                             (* (high - low) values *)
+
+  let st (a:Type) = state -> M (a * state)
+
+  total reifiable reflectable new_effect {
+    STATE : a:Type -> Effect
+    with repr = st; ...
+  }
+
+    ```
 ~Fragment
-```smt
-(assert (forall ((@f Fuel) (x Term))
-        (implies (HasType x nat)
-                 (= (factorial_fuel (SFuel @f) x)
-                    (ite (op_Equality int x (BoxInt 0))
-                         (BoxInt 1)
-                         (op_Multiply x
-                                (factorial_fuel @f
-                                     (op_Subtraction x (BoxInt 1)))))))))
-```
-~
-~Fragment
-```smt
-(assert (forall ((@x Term)) (= (factorial @x) (factorial_fuel MaxFuel @x))))
-```
+    ```
+    let incr (n:int) : St unit = 
+      STATE?.put_low (STATE?.get_low() + n)
+
+    let incr2 () : St unit = 
+      if (STATE?.get_high() = 42) then (incr 2) else (incr 1; incr 1)
+
+    let non_interference ()
+      : Lemma (forall h0 h1 n. let (_,(h0',n' )) = reify (incr2 ()) (h0,n) in 
+                               let (_,(h1',n'')) = reify (incr2 ()) (h1,n) in
+                               n' = n'')
+    = ()
+    ```
 ~
 
+* {.fragment} or even about **different runs** of **different programs**
+
+<!-- <\!-- TODO: try out this code -\-> -->
+
+<!-- <\!-- STATE.reify (e : ST a pre post) -\-> -->
+<!-- <\!--   : n0:nat -> Pure (a * nat) (requires (pre n0)) -\-> -->
+<!-- <\!--                              (ensures (fun r -> post n0 (fst r) (snd r)) -\-> -->
+
+
+<!-- <\!-----------------------------------------------------------------------------\-> -->
+
+## Reification works pretty well ##
+
+* **Reducing effectful verification to pure verification**
+  - for which F* already has good support (i.e. SMT automation)
+
+* {.fragment} **Recent experiments using this for "relational verification"**
+  - correctness of program transformations
+  - information flow control
+  - proofs of algorithmic optimizations (memoization, union-find)
+  - simple game-based cryptographic proofs
+
+* {.fragment} **Downside**: reification doesn't play well with monotonic state
+  - cannot naively safely reify the _real_ `STATE` and `Stack` effects
+  - doing it naively allows you to replay old states with `recall`
+  - [ongoing work to solve it based on hybrid modal logics]{color:DarkGray}
+  - [unfortunately reification also starts to act on the context]{color:DarkGray}
+
+
+
 <!------------------------------------------------------------------------------>
 
-## Some dreams and ongoing work on F\* ##
+## Metaprogramming in F* ##
+### Tactics as a [**user-defined**]{color:DarkBlue}, [**non-primitive**]{color:DarkRed} effect ###
 
-* **[Improve tactics]{color:DarkBlue;}**, balance automation and control
+<!------------------------------------------------------------------------------>
 
-* {.fragment} **[Better treatment of effects]{color:DarkBlue;}**:
-  Dijkstra monads for free v2
+## Tactics (New, Still Experimental) ##
 
-* {.fragment} **[Studying more effects]{color:DarkBlue;}**:
-  probabilities, concurrency, ...
+* F\* tactics written as **effectful F\* code** (inspired by Lean, Idris)
 
-* {.fragment} **[Effect masking]{color:DarkBlue;}**:
-  hiding exceptions, state, divergence(!?), ...
+* have **access to F\*'s proof state** (and can efficiently roll it back)
 
-* {.fragment} **[Further work out metatheory]{color:DarkBlue;}**
-  and **[self-certify core type-checker]{color:DarkBlue;}**
-  - **monadic reification + monotonic state** and **relation to modal logic**
-  - soundly allowing **subtyping for datatypes** (`list nat <: list int`)
+* can **introspect on F\* terms** (deep embedding, simply typed)
 
-* {.fragment} **[Join the team at Inria Paris + Microsoft Research]{color:DarkRed;}**
+* can be **[interpreted]{color:DarkRed}** by F\*'s normaliser(s)
 
-<!-- * {.fragment} **[Verified interoperability]{color:DarkBlue;}**: F\* (OCaml) + Low\* (C) + Vale (ASM)  -->
+* or **[compiled to OCaml]{color:DarkGreen}** and used as **native plugins**
 
-<!-- TODO: have new look at my list of problems -->
+* {.fragment} **user-defined, non-primitive effect**: proof state + exceptions monad
+
+    ```
+    noeq type __result a =
+        | Success of a * proofstate
+        | Failed  of string * proofstate
+
+    let __tac (a:Type) = proofstate -> Tot (__result a)
+
+    (* reifiable *) new_effect {
+      TAC : a:Type -> Effect
+      with repr = __tac; ...
+    }
+
+    let tactic (a:Type) = unit -> Tac a
+    ```
+<!------------------------------------------------------------------------------>
+
+## Tactics can [discharge]{color:DarkBlue} verification conditions (replacing SMT) ##
+
+~Center
+<img src="../../stuff/tactics-assert_by_tactic.png" width="80%">
+~
+
+<!-- [tactics-assert_by_tactic]: ../../stuff/tactics-assert_by_tactic.png { heigth=50% } -->
+
+<!------------------------------------------------------------------------------>
+
+
+## Tactics can [massage]{color:DarkGreen} verification conditions (complementing SMT) ##
+
+~Center
+<img src="../../stuff/tactics-canon.png" width="90%">
+~
+
+<!-- [tactics-canon]: ../../stuff/tactics-canon.png { heigth=50% } -->
+
+<!------------------------------------------------------------------------------>
+
+## Tactics can [synthesize]{color:DarkRed} F\* terms (metaprogramming) ##
+
+~Center
+<img src="../../stuff/tactics-synth_by_tactic.png" width="90%">
+~
+
+<!-- [tactics-synth_by_tactic]: ../../stuff/tactics-synth_by_tactic.png { heigth=50% } -->
+
+<!------------------------------------------------------------------------------>
+
+## Tactics have also been used to extend F\* with [typeclasses]{color:DarkOrange} ##
+
+~Center
+<img src="../../stuff/tactics-typeclasses.png" width="100%">
+~
+
+<!------------------------------------------------------------------------------>
+
+## Some uses of tactics ##
+
+* **Reflective tactics for arithmetic** (proof automation)
+
+* **Bitvectors in Vale** (proof automation)
+
+* **Separation logic** (proof automation)
+
+* **Pattern matcher** (metaprogramming)
+
+* **Efficient low-level parsers and printers** (metaprogramming)
+
+<!------------------------------------------------------------------------------>
+
+## Time to conclude! ##
+
+* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
+
+* Yesterday: Verifying Stateful Programs in F\*
+
+* Today: Monotonic State in F\*
+
+* Today: F\*'s Extensible Effect System and Metaprogramming in F\*
+
+~Center
+[![fstar-logo]](https://www.fstar-lang.org)
+~

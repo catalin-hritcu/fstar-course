@@ -22,7 +22,7 @@
     "ST_EXN", "ST_EXN_DIV", "IO_ST_EX", "STDiv", "St", "Exn", "StExn",
     "noeq", "Dv", "total", "new_effect", "STATE", "STEXN", "STATE_STEXN",
     "reify", "reflect", "PURE", "DIV", "Ghost",
-    "reifiable", "reflectable", "abstract", "Type0", "GTot"
+      "reifiable", "reflectable", "abstract", "Type0", "GTot", "SMTPat", "admit", "MST", "Stack", "EXN", "CONT"
   ],
 
 

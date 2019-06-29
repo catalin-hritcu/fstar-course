@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : Program Verification with F*
-Author        : Catalin Hritcu
+Author        : Danel Ahman
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -21,76 +21,104 @@ Package       : xypic
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[C&#259;t&#259;lin Hri&#355;cu, Inria Paris](http://prosecco.gforge.inria.fr/personal/hritcu/)**
+**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
 
-[EPIT 2018 Software Verification Spring School](http://projects.lsv.fr/epit18/)
+[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
 
-Aussois, France, 8 May, 2018
+Ohrid, Macedonia, 11 August, 2018
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
 
 <!------------------------------------------------------------------------------>
 
-## Verifying stateful programs ## {#stateful1}
-<!-- ### Variant #1: intrinsically (at definition time) ### -->
+## Recap of yesterday: Functional core of F\* ## {#fcore}
 
-* State in F\*: **mutable references**
-  ```
-  val incr : r:ref int -> St unit
-  let incr r = (r := (!r + 1))
-  ```
+* **[Variant of dependent type theory]{color:DarkBlue}**
+  - $\lambda$, $\Pi$, inductives, matches, universe polymorphism
 
-* {.fragment} Hoare logic-style **[pre-conditions]{color:DarkGreen}** and **[post-conditions]{color:DarkRed}**
-  ```
-  [INCLUDE=../../../code/state/IncrST.fst:incr_type]
-  ```
-* {.fragment} Beyond what can be expressed with refinements
-* {.fragment} stateful **[pre-condition]{color:DarkGreen}** is **[relation on initial states]{color:DarkGreen}**
-* {.fragment} **[post-condition]{color:DarkRed}** is **[relation on initial states, results, and final states]{color:DarkRed}**
-* {.fragment} the more complex the effect, the more complex the specs (and proofs)
+* {.fragment} **[Recursion and semantic termination check]{color:DarkRed}**
+  - potential non-termination is an effect
 
-<!-- `St` is actually just an abbreviation -->
-<!-- St t = ST t (requires True) (ensures (fun _ _ _ -> True)) -->
+* {.fragment} **[Refinements]{color:DarkRed}**
+  - **Refined value types**:
+    - `x:t{p}`
+  - **Refined computation types**:
+    - `Pure t pre post `
+    - `Div t pre post`
+  - computationally and proof irrelevant, discharged by SMT
+
+* {.fragment} **[Subtyping and sub-effecting]{color:DarkRed}** (`<:`)
+
+* {.fragment} **[Extensional equality]{color:DarkRed}** (`=`, `==`, `===`)
+
+<!-------------------------------------------------------------------------------->
+
+## Schedule ##
+
+* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
+
+* **Today: Verifying Stateful Programs in F\***
+
+* Tomorrow: Monotonic State in F\*
+
+* Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\*
 
 <!------------------------------------------------------------------------------>
 
-## Heap and ST interfaces (much simplified) ##
+## Verifying stateful programs ## {#stateful1}
+<!-- ### Variant #1: intrinsically (at definition time) ### -->
+
+* The `St` effect---programming with [**garbage-collected references**]{color:DarkBlue}
+  ```
+  val incr : r:ref int -> St unit
+  
+  let incr r = r := !r + 1
+  ```
+
+* {.fragment} Hoare logic-style **[preconditions]{color:DarkGreen}** and **[postconditions]{color:DarkRed}** with `ST`
+  ```
+  val incr : r:ref int -> 
+    ST unit (requires (fun h0 -> True))                        
+            (ensures  (fun h0 _ h2 -> modifies !{r} h0 h2 /\ 
+                                      sel h2 r == sel h0 r + 1))
+  ```
+  - {.fragment} **[precondition]{color:DarkGreen}** (requires) is a **[predicate on initial states]{color:DarkGreen}**
+  - {.fragment} **[postcondition]{color:DarkRed}** (ensures) **[relates initial states, results, and final states]{color:DarkRed}**
+<!--  - {.fragment}
+    ```
+    e : ST t (requires pre) (ensures post) /\ pre h0 /\ (h0,e) ~>* (h1,v) ==> post h0 v h1
+    ```-->
+
+* {.fragment} `St` is again just an abbreviation for `ST` with trivial pre-postconditions
+
+* {.fragment} **Sub-effecting:** ` Pure <: ST ` and in fact also ` Div <: ST `
+
+* {.fragment} As such, think of `ST` as having a [**partial correctness**]{color:DarkBlue} reading
+
+<!------------------------------------------------------------------------------>
+
+## `Heap` and `ST` interfaces (much simplified) ##
 ```
 module Heap
+
 [INCLUDE=../../../code/state/Heap.fsti:heap_model]
 ```
 
 ~Fragment
 ```
 module ST
+
 [INCLUDE=../../../code/state/ST.fsti:ops]
 ```
 ~
 
-<!-- leaving out alloc here, since it's not interesting for our examples,
-     where allocation happens outside the code that we verify -->
-     
-<!-- simplifying out the `contains` for now. Only used in IncrST.fst:two_refs -->
-
-<!-- For read the spec we give is in fact more complicated than what we
-     have in ulib/FStar.ST.fst, so this is not a simplification!
-abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
-  STATE a (fun p h -> p (sel h r) h) = ...
-     It's maybe still helps to illustrate modifies on very simple examples,
-     although it's still quite debatable if the cheat is worth it.
-  TODO: maybe fix this; that would also match Danel's monotonic.mdk
--->
-
 <!------------------------------------------------------------------------------>
 
-## Verifying incr (intuition) ##
+## Verifying `incr` (intuition) ##
 
 ```
-[INCLUDE=../../../code/state/ST.fsti:ops]
-```
-```
-[INCLUDE=../../../code/state/Incr2ST.fst:incr2]
+let incr r = r := !r + 1
 ```
 ~Fragment
 ```
@@ -99,9 +127,18 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 ~
 ~Fragment
 ```
-[INCLUDE=../../../code/state/IncrST.fst:modifies_trans]
+[INCLUDE=../../../code/state/Incr2ST.fst:incr2]
+```
+```
+[INCLUDE=../../../code/state/ST.fsti:ops]
 ```
 ~
+<!--~Fragment
+```
+[INCLUDE=../../../code/state/IncrST.fst:modifies_trans]
+```
+~-->
+
 <!-- modifies !{} h0 h1 /\ modifies !{r} h1 h2 ==> modifies !{r} h0 h2 -->
 
 <!------------------------------------------------------------------------------>
@@ -112,13 +149,18 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 [INCLUDE=../../../code/state/Incr2ST.fst:incr2]
 ```
 
+<br/>
+
 ```
-  G |- e1 : ST t1 (requires (fun h0 -> pre)) (ensures (fun h0 x1 h1 -> post))
-  G, x1:t1 |- e2 : ST t2 (requires (fun h1 -> exists h0. post))
-                         (ensures (fun h1 x2 h2 -> post'))
-  ---------------------------------------------------------------------------
-  G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
-                      (ensures (fun h x2 h2 -> exists x1 h1. post /\ post'))
+G |- e1 : ST t1 (requires (fun h0 -> pre))
+                (ensures  (fun h0 x1 h1 -> post))
+                  
+G, x1:t1 |- e2 : ST t2 (requires (fun h1 -> exists h0. post))
+                       (ensures  (fun h1 x2 h2 -> post'))
+--------------------------------------------------------------------------
+G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
+                               (ensures  (fun h x2 h2 ->
+                                             exists x1 h1. post /\ post'))
 ```
 
 <!------------------------------------------------------------------------------>
@@ -149,7 +191,7 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 [INCLUDE=../../../code/state/SwapRefsST.fst:swap_proof]
 ```
 ~
-* {.fragment} This variant is correct even when `r1` and `r2` are aliased
+<!--* {.fragment} **Note:** This variant is correct even when `r1` and `r2` are aliased-->
 
 <!------------------------------------------------------------------------------>
 
@@ -161,11 +203,9 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 
 * Correctness of this variant relies on `r1` and `r2` not being aliased
 
-* ... and on `int` being unbounded (mathematical) integers
+* ... and on `int` being unbounded (mathematical) integers<br/><br/>
 
-* {.fragment} Exercise: sketch hand proof that this code is correct
-
-<!-- TODO: write down solution for this one -->
+* {.fragment} **Exercise:** Sketch a hand proof that this code is correct
 
 <!-- ~Block {.console} -->
 <!-- ```text -->
@@ -225,8 +265,8 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 [INCLUDE=../../../ex/SumST.fst:sum_st]
 ```
 
-<!-- TODO: SumST.fst: the non-linear arith part of it is very flaky!
-           do it with tactics maybe? canonizer!? -->
+* {.fragment} **Exercise:** Strengthen the spec of `sum_st'` to remove `admit` in `sum_st`
+
 
 
 <!------------------------------------------------------------------------------>
@@ -246,21 +286,172 @@ abstract let read (#a:Type) (#rel:preorder a) (r:mref a rel) :
 
 <!------------------------------------------------------------------------------>
 
-## Stateful invariants ##
-
+## Exercise: Stateful Factorial ##
+`FactorialST.fst`
 ```
-type nlist = xs:list int{Cons? xs}
-
-let create (x:int) : St (ref nlist) = alloc #nlist [x]
-
-let add (x:int) (r:ref nlist) : St unit =  r := x :: !r 
-
-let main() : St unit =
-  let r = create 1 in
-  add 2 r;
-  add 3 r
-  (* r := []  -- fails: expected type nlist; got type list int *)
+[INCLUDE=../../../ex/FactorialST.fst:factorial_ex]
 ```
 
-<!-- TODO: Danel thinks this is till not good enough;
-           he has anyway a better example on his slide (complex_procedure) -->
+
+<!------------------------------------------------------------------------------>
+
+## Stateful invariants (mutable non-empty lists) ##
+
+```
+module NList
+  abstract type nlist = xs:list int{Cons? xs}
+
+  let create (x:int) : St (ref nlist) = alloc #nlist [x]
+
+  let add (x:int) (r:ref nlist) : St unit =  r := x :: !r
+
+  let read (r:ref nlist) : St nlist = !r
+```
+```
+let f (r:ref nlist) = r := [] (* fails: expected nlist; got type list int *)
+```
+~Fragment
+```
+module NListClient
+  let complex_procedure (r:ref nlist) : St unit = ...
+
+  let main () : St unit =
+    let r = create 1 in
+    add 2 r;
+    complex_procedure r;
+    let l = read r in 
+    assert ([2,1] `is_suffix_of` l)  (* fails, even though we know c_p can
+                                        only use `add` and `read` on r *)  
+```
+~
+
+* {.fragment} Tomorrow we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+
+<!------------------------------------------------------------------------------>
+
+## Summary: Verifying Stateful Programs ##
+
+* **[ML-style garbage-collected memory model]{color:DarkBlue}**
+  ```
+  val heap : Type          val ref  : Type -> Type
+
+  val sel     : #a:Type -> heap -> ref a -> GTot a
+  val addr_of : #a:Type -> ref a -> GTot nat
+
+  val modifies : s:set nat -> h0:heap -> h1:heap -> prop
+  ```
+
+* **[`St` effect for simple ML-style programming]{color:DarkBlue}**
+  ```
+  let incr (r:ref int) : St unit = r := !r + 1
+  ```
+
+* **[`ST` effect for pre- and postcondition based (intrinsic) reasoning]{color:DarkBlue}**
+  ```
+  ST unit (requires (fun h0 -> True))                        
+          (ensures  (fun h0 _ h2 -> modifies !{r} h0 h2 /\ sel h2 r == n))
+  ```
+
+* **[Refinement types can enforce (some) stateful invariants]{color:DarkBlue}**
+
+* {.fragment} **[But what about verifying low-level (e.g., C) code, I hear you say?]{color:DarkRed}**
+
+<!------------------------------------------------------------------------------>
+
+## Low*: programming and verifying low-level C code ##
+
+* **Low\*:** a subset of F\* that
+  - enjoys compilation to C through its companion compiler KreMLin
+  - provides F\* libraries that model a curated set of C features:
+    + C memory model
+    + stack- and heap-allocated arrays
+    + machine integers
+    + few system-level functions from the C standard library
+  - see [https://fstarlang.github.io/lowstar/html/](https://fstarlang.github.io/lowstar/html/) for Low*'s own tutorial
+  - get KreMLin from [https://github.com/FStarLang/kremlin](https://github.com/FStarLang/kremlin)
+
+**[The code (Low\*) is low-level, but the verification (F\*) is not]{color:DarkRed}**<br/>
+
+* {.fragment} **Vale** (Verified Assembly Language for Everest)
+  - for even lower level programming and verification within F\*
+  - an embedding of x64 assembly language in F\*
+  - supports interop with Low\*
+  - see [https://github.com/project-everest/vale](https://github.com/project-everest/vale) for more details
+
+<!------------------------------------------------------------------------------>
+
+## Low*: the low-level memory model ##
+
+* **HyperStack**
+  - [**hierarchical**]{color:DarkBlue} memory model that divides the heap into a tree of [**regions**]{color:DarkBlue}
+  - a distinguished set of regions that model the C call [**stack**]{color:DarkRed}
+  - (low-level) programs may use stack allocation, heap allocation, or both
+
+* {.fragment} `Stack` effect for stack-allocating programs (intuitively, `ST` on `HS`'s `mem`)
+  ```
+  module HyperStack.ST
+  
+    effect Stack (a:Type) (requires pre) (ensures post)
+      = ST a (requires pre)
+             (ensures  (fun m0 x m1 -> post m0 x m1 /\ equal_domains m0 m1))
+  ```
+~Fragment
+  ```
+  let equal_domains (m0 m1: mem) =
+    get_tip m0 == get_tip m1 /\         (* leaves the C call stack intact *)
+    Set.equal (Map.domain (get_hmap m0))
+              (Map.domain (get_hmap m1)) /\
+                                (* does not (de)allocate any heap regions *)
+    same_refs_in_all_regions m0 m1
+                                 (* does not allocate in existing regions *)
+  ```
+~
+
+* {.fragment} Additional effects for [**heap-allocating**]{color:DarkBlue} and [**arbitrary**]{color:DarkRed} low-level code
+
+<!------------------------------------------------------------------------------>
+
+## Low*: a small example ##
+
+```
+let f (): Stack UInt64.t (requires (fun _ -> True))
+                         (ensures  (fun _ _ _ -> True))
+                         
+  = push_frame ();                         (* pushing a new stack frame *)
+    
+    let b = LowStar.Buffer.alloca 1UL 64ul in
+    assert (b.(42ul) = 1UL);      (* high-level reasoning in F*'s logic *)
+
+    b.(42ul) <- b.(42ul) +^ 42UL;
+    let r = b.(42ul) in
+      
+    pop_frame ();           (* popping the stack frame we pushed above, *)
+                            (* so as to ensure that equal_domains holds *)
+    assert (r = 43UL);                    
+    r
+```
+```
+uint64_t f()
+{
+  uint64_t b[64U];
+    
+  for (uint32_t _i = 0U; _i < (uint32_t)64U; ++_i)
+    b[_i] = (uint64_t)1U;
+      
+  b[42U] = b[42U] + (uint64_t)42U;
+  uint64_t r = b[42U];
+  return r;
+}
+```
+
+<!------------------------------------------------------------------------------>
+
+## Next steps in this course ##
+
+* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
+
+* Today: Verifying Stateful Programs in F\*
+
+* **Tomorrow: Monotonic State in F\***
+
+* **Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\***

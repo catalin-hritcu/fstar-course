@@ -67,7 +67,8 @@ let closed = below 0
 
 let rec below_subst_beta (n:var) (e1 e2:exp) : Lemma
           (requires (below (n+1) e1 /\ below n e2))
-          (ensures (below n (subst (sub_beta e2) e1))) =
+          (ensures (below n (subst (sub_beta e2) e1)))
+          (decreases e1) =
   match e1 with
   | Var x -> ()
   | App e11 e12 -> (below_subst_beta n e11 e2;

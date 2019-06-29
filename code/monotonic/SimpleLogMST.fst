@@ -8,6 +8,7 @@ open FStar.List.Tot
 
 let subset' (#a:eqtype) (l1 l2:list a)
   = forall x. x `mem` l1 ==> x `mem` l2
+
 let subset (#a:eqtype) : Tot (preorder (list a)) = subset'
 
 let lref = mref (list int) subset
