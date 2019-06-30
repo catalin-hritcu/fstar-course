@@ -281,7 +281,8 @@ type nat = x:int{x >= 0}
   let f : x:nat{x > 0} -> int = factorial
   ```
 
-* {.fragment} Different kinds of extensional equality (`=`, `==`, `===`)
+<!-- Type theorists
+* {.fragment} Different kinds of extensional equality (`=`, `==`, `===`) -->
 
 
 ## Dependent types ##
@@ -296,6 +297,10 @@ type nat = x:int{x >= 0}
   ```
   val incr' : x:nat{odd x} -> y:nat{even y}
   ```
+
+* {.fragment} Exercise: Can you find other types for `incr`?
+
+<!-- Type theorists
 
 * {.fragment} (Parameterised and indexed) inductive datatypes; implicit arguments
   ```
@@ -330,7 +335,6 @@ type nat = x:int{x >= 0}
   val lookup : #a:Type -> #n:nat -> vec a n -> m:nat{m `less_than` n} -> a
   let rec lookup #a #n v m = ...
   ```
-
 * {.fragment} Or we could even just use lists + refinement types
   ```
   type list (a:Type) = | Nil : list a | Cons : hd:a -> tl:list a -> list a
@@ -341,7 +345,7 @@ type nat = x:int{x >= 0}
   val lookup : #a:Type -> l:list a -> m:nat{m `less_than` (length l)} -> a
   let rec lookup #a l m = ...
   ```
-
+-->
 
 
 ## Total functions in F\* ##
@@ -450,6 +454,8 @@ type nat = x:int{x >= 0}
 
 <!------------------------------------------------------------------------------>
 
+<!-- Type theorists
+
 ## F\* effect system encapsulates effectful code (`Tot` and `GTot`) ##
 
 * {.fragment} **[Ghost]{color:DarkBlue}** effect for code used only in specifications
@@ -476,6 +482,7 @@ type nat = x:int{x >= 0}
   ```
   let f (g:unit -> Tot nat) : GTot (n:nat{n = g ()}) = g ()
   ```
+-->
 
 <!-- Non-informative types T ::= unit | Type u | t -> Tot T | t -> GTot T -->
 
@@ -535,11 +542,10 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
 
 * **Two classes of types**
   - [Value types (`t`):]{color:DarkBlue} `int`, `list int`, ...
-  - [Computation types (`C`):]{color:DarkRed} ` Tot t`, ` Dv t`, ` GTot t`<br/>
-
+  - [Computation types (`C`):]{color:DarkRed} ` Tot t`, ` Dv t`, ` GTot t`
 
 * {.fragment} **Dependent (effectful) function types** of the form: ` x:t -> C`
-  - argument can't have side-effects, so a value type<br/><br/>
+  - argument can't have side-effects, so a value type
 
 * {.fragment} **Two forms of refinement types**
   - [Refined value types:]{color:DarkBlue}
@@ -563,11 +569,12 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
 [INCLUDE=../../../code/pure-fun/AppendLength.fst:append_length]
 ```
 ~
-* {.fragment} Convenient syntactic sugar: **the `Lemma` effect**
+* {.fragment} Syntactic sugar
+<!-- : **the `Lemma` effect** -- CH: computation type -->
 ```
 Lemma (property) = Pure unit (requires True) (ensures (fun _ -> property))
+Lemma (pre) (property) = Pure unit (requires pre) (ensures (fun _ -> property))
 ```
-* {.fragment} F\* also provides a `requires`-`ensures` variant of the `Lemma` effect
 
 <!------------------------------------------------------------------------------>
 
