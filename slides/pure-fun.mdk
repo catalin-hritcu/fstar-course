@@ -26,7 +26,7 @@ HTML Meta     : clear
 
 [Summer School on Verification Technology, Systems, and Applications (VSTA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
-University of Luxembourg on 1-2 July 2019
+University of Luxembourg, 1-2 July 2019
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
@@ -37,17 +37,16 @@ University of Luxembourg on 1-2 July 2019
 
 * **Today: A Gentle Introduction to F\* (Purely Functional Programs)**
 
-* Tomorrow: Verifying Stateful Programs in F\*
+* Today: Verifying Stateful Programs in F\*
 
-* Sunday: Monotonic State in F\*
+* Tomorrow: Monotonic State in F\*
 
-* Sunday: F\*'s Extensible Effect System and Metaprogramming in F\*
+* Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\*
 
 ~Fragment
-Slides, code, exercises, and setup instructions <br/>@<br/>
-[https://danelahman.github.io/teaching/eutypes2018/](https://danelahman.github.io/teaching/eutypes2018/)
-
-<br/>
+Slides, code, exercises, and setup instructions at<br/>
+[https://prosecco.gforge.inria.fr/personal/hritcu/teaching/vtsa2019](https://prosecco.gforge.inria.fr/personal/hritcu/teaching/vtsa2019)<br/>
+(or via the VTSA website)
 ~
 
 ~Fragment
@@ -59,8 +58,6 @@ Slides, code, exercises, and setup instructions <br/>@<br/>
 ## Program verification: Shall the twain ever meet? ##
 
 <!-- Two, mostly disjoint sides of program verification research -->
-
-\ 
 
 | [Interactive proof assistants]{color:DarkRed;} ||                                 | [Semi-automated verifiers of<br/> imperative programs]{color:DarkBlue;} ||
 |:----------------------:|:-----------------------+:~{background-color:LightBlue}~~:+:--------------------------------:|:---------------------------------|
@@ -84,9 +81,9 @@ but only very weak logics
 <!-- General-purpose -->
 * **[Functional programming language with effects]{color:Black;}**
   - like OCaml, F#, Haskell, ...
-    ```
-    let incr (r:ref a) = r := !r + 1
-    ```
+    <!-- ``` -->
+    <!-- let incr (r:ref a) = r := !r + 1 -->
+    <!-- ``` -->
   - F\* extracted to OCaml or F\# by default
   - subset of F\* extracted to efficient C code (Low\* and [KreMLin](https://github.com/FStarLang/kremlin))
 
@@ -95,7 +92,7 @@ but only very weak logics
 
 * **[Interactive proof assistant based on dependent types]{color:DarkRed;}**
   <!-- - full dependency, inductive types, universe polymorphism -->
-  - like Coq, Agda, Lean, ...
+  - like Coq, Agda, Lean, Nuprl, ...
 
 <!-- * {.fragment} Other tools in this space: -->
 <!--   - DML/ATS, HTT, Idris, Trellys/Zombie, CoqHammer, ... -->
@@ -103,6 +100,16 @@ but only very weak logics
 
 
 <!-------------------------------------------------------------------------------->
+
+<!--
+TODO: could bring from Nik's slides:
+- Running F* Programs
+- Some uses of F*
+- EverCrypt: A No-Excuses, Verified Cryptographic Provider
+- AES-GCM: Authenticated Encryption for 90% of Secure Internet Traffic
+- The Current Everest and F* team
+  - using photo, instead of list of names, just that it's the Everest not F* team
+-->
 
 ## F\* in action, at scale ##
 
@@ -122,16 +129,54 @@ but only very weak logics
     - [ReVer](https://github.com/msr-quarc/ReVerC): Verified compiler to reversible circuits
   - F\*'s new metaprogramming framework increasingly used in **[Everest](https://project-everest.github.io/)**
 
-# The current F\* team #
+# The current F* team #
 
 ~Center
-[**Microsoft Research (US, UK, India), Inria Paris, MIT, Rosario, ...**]{color:DarkGreen;}
+[**Microsoft Research, Inria Paris, Rosario, MIT, ...**]{color:DarkGreen;}
 ~
 
-  |   |  
---- | --- |
-[Danel Ahman]{color:DarkBlue}<br/>Benjamin Beurdouche<br/>Karthikeyan Bhargavan<br/>Barry Bond<br/>Antoine Delignat-Lavaud&nbsp;&nbsp;&nbsp;<br/>Victor Dumitrescu<br/>Cédric Fournet<br/>Chris Hawblitzel<br/>Cătălin Hriţcu<br/>Markulf Kohlweiss<br/>Qunyan Mangus<br/>[Kenji Maillard]{color:DarkBlue} | Asher Manning<br/>Guido Martínez<br/>Zoe Paraskevopoulou<br/>Clément Pit-Claudel<br/>Jonathan Protzenko<br/>Tahina Ramananandro<br/>Aseem Rastogi<br/>[**Nikhil Swamy (benevolent dictator)**]{color:DarkRed;}<br/>Christoph M. Wintersteiger<br/>Santiago Zanella-Béguelin<br/>Gustavo Varo | 
+<!-- {font-size:xx-large} -->
 
+~Columns
+~~ Column {width 50%}
+- Danel Ahman
+- Benjamin Beurdouche
+- Karthikeyan Bhargavan
+- Barry Bond
+- Antoine Delignat-Lavaud
+- Victor Dumitrescu
+- Cédric Fournet
+- Chris Hawblitzel
+- Cătălin Hriţcu
+- Markulf Kohlweiss
+- Qunyan Mangus
+- Kenji Maillard
+~~
+~~ Column {width 50%}
+- Asher Manning
+- Guido Martínez
+- Zoe Paraskevopoulou 
+- Clément Pit-Claudel
+- Jonathan Protzenko
+- Ramkumar Ramachandra
+- Tahina Ramananandro
+- Aseem Rastogi
+- **[Nikhil Swamy (benevolent dictator)]{color:DarkGreen}**
+- Christoph M. Wintersteiger
+- Santiago Zanella-Béguelin
+- Gustavo Varo
+~~
+~
+
+<!-- # The current F\* team # -->
+
+<!-- ~Center -->
+<!-- [**Microsoft Research (US, UK, India), Inria Paris, MIT, Rosario, ...**]{color:DarkGreen;} -->
+<!-- ~ -->
+
+<!--   |   |   -->
+<!-- --- | --- | -->
+<!-- [Danel Ahman]{color:DarkBlue}<br/>Benjamin Beurdouche<br/>Karthikeyan Bhargavan<br/>Barry Bond<br/>Antoine Delignat-Lavaud&nbsp;&nbsp;&nbsp;<br/>Victor Dumitrescu<br/>Cédric Fournet<br/>Chris Hawblitzel<br/>Cătălin Hriţcu<br/>Markulf Kohlweiss<br/>Qunyan Mangus<br/>[Kenji Maillard]{color:DarkBlue} | Asher Manning<br/>Guido Martínez<br/>Zoe Paraskevopoulou<br/>Clément Pit-Claudel<br/>Jonathan Protzenko<br/>Tahina Ramananandro<br/>Aseem Rastogi<br/>[**Nikhil Swamy (benevolent dictator)**]{color:DarkRed;}<br/>Christoph M. Wintersteiger<br/>Santiago Zanella-Béguelin<br/>Gustavo Varo |  -->
 
 
 <!------------------------------------------------------------------------------>

@@ -3,7 +3,7 @@ verify:
 	make -C code/pure-fun
 	make -C code/state
 	make -C code/monotonic
-#	make -C code/effects
+	make -C code/effects
 	make -C ex
 	make -C sol
 
@@ -11,7 +11,7 @@ clean:
 	make -C code/pure-fun clean
 	make -C code/state clean
 	make -C code/monotonic clean
-#	make -C code/effects
+	make -C code/effects
 	make -C ex clean
 	make -C sol clean
 
