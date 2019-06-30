@@ -151,20 +151,19 @@ but only very weak logics
 [EverCrypt-table]: ../../stuff/EverCrypt-table.png {width=900px}
 
 
-# AES-GCM: Authenticated Encryption for 90% of Secure Internet Traffic
-
-
+# AES-GCM: Authenticated Encryption
+<!-- for 90% of Secure Internet Traffic -->
 ~Center
-[![EverCrypt-perf]](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
+[![EverCrypt-perf]{heigth=60%}](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
 ~
 
 [EverCrypt-perf]: ../../stuff/EverCrypt-perf.png 
 
 # The current F* team #
 
-~Center
-[**Microsoft Research, Inria Paris, Rosario, MIT, ...**]{color:DarkGreen;}
-~
+- [**Microsoft Research, Inria Paris, Rosario, MIT, ...**]{color:DarkGreen;}
+  + many former members, interns, external contributors, ... you?
+  + [https://github.com/FStarLang/FStar](https://github.com/FStarLang/FStar)
 
 <!-- {font-size:xx-large} -->
 
@@ -198,6 +197,7 @@ but only very weak logics
 - Gustavo Varo
 ~~
 ~
+
 
 <!-- # The current F\* team # -->
 
