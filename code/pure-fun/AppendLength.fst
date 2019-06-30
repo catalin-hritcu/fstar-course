@@ -13,7 +13,6 @@ let rec append_length (#a:Type) (xs ys : list a)
   : Pure unit
       (requires True)
       (ensures  (fun _ -> length (append xs ys) = length xs + length ys))
-
 = match xs with
   | []       -> ()
  (* nil-VC:  postcondition of () ==> len (app [] ys) = len [] + len ys   *)
