@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : A Gentle Introduction to F*
-Author        : Catalin hritcu
+Author        : Catalin hritcu, Nik Swamy
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -24,7 +24,7 @@ HTML Meta     : clear
 
 **[Catalin Hritcu, Inria Paris](https://prosecco.gforge.inria.fr/personal/hritcu)**
 
-[Summer School on Verification Technology, Systems, and Applications (VSTA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
+[Summer School on Verification Technology, Systems, and Applications (VTSA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
 University of Luxembourg, 1-2 July 2019
 ~
@@ -85,49 +85,80 @@ but only very weak logics
     <!-- let incr (r:ref a) = r := !r + 1 -->
     <!-- ``` -->
   - F\* extracted to OCaml or F\# by default
-  - subset of F\* extracted to efficient C code (Low\* and [KreMLin](https://github.com/FStarLang/kremlin))
+  - subset of F\* extracted to efficient C code
 
-* **[Semi-automated verification system using SMT]{color:DarkBlue;}**
+* {.fragment} **[Semi-automated verification system using SMT]{color:DarkBlue;}**
   - like Dafny, FramaC, Why3, Liquid Types, ...
 
-* **[Interactive proof assistant based on dependent types]{color:DarkRed;}**
+* {.fragment} **[With an expressive core language based on dependent type theory]{color:DarkRed;}**
   <!-- - full dependency, inductive types, universe polymorphism -->
   - like Coq, Agda, Lean, Nuprl, ...
+
+* {.fragment} **[A metaprogramming and tactic framework<br/>
+  for interactive proof and user-defined automation]{color:DarkGreen;}**
+  - like Coq, Lean, Nuprl, Isabelle, HOL, etc.
+
 
 <!-- * {.fragment} Other tools in this space: -->
 <!--   - DML/ATS, HTT, Idris, Trellys/Zombie, CoqHammer, ... -->
   <!-- - But F\* is the closest to bridging the gap by nicely integrating these three things -->
 
+<!------------------------------------------------------------------------------>
 
-<!-------------------------------------------------------------------------------->
+# Running F\* Programs
 
-<!--
-TODO: could bring from Nik's slides:
-- Running F* Programs
-- Some uses of F*
-- EverCrypt: A No-Excuses, Verified Cryptographic Provider
-- AES-GCM: Authenticated Encryption for 90% of Secure Internet Traffic
-- The Current Everest and F* team
-  - using photo, instead of list of names, just that it's the Everest not F* team
--->
+~Center
+![fstar-lowstar-vale-compilation]
+~
 
-## F\* in action, at scale ##
+[fstar-lowstar-vale-compilation]: ../../stuff/fstar-lowstar-vale-compilation.png { width=800px }
 
-* **[Functional programming language with effects]{color:Black;}**
-  - F\* is programmed in F\*, but not (yet) verified
+<!-- TODO: worth mentioning that the ASM and Vale interoperate -->
 
-*  {.fragment} **[Semi-automated verification system]{color:DarkBlue;}**
-  - **[Project Everest](https://project-everest.github.io/)**: verify and deploy new, efficient HTTPS stack
-      - [miTLS*](https://github.com/mitls/mitls-fstar): Verified reference implementation of TLS (1.2 and 1.3)
-      - [HACL\*](https://github.com/mitls/hacl-star): High-Assurance Cryptographic Library
-      - [Vale](https://github.com/project-everest/vale): Verified Assembly Language for Everest
+<!------------------------------------------------------------------------------>
 
-*  {.fragment} **[Proof assistant based on dependent types]{color:DarkRed;}**
-  - Fallback when SMT fails; also for mechanized metatheory
-    - [MicroFStar](https://github.com/FStarLang/FStar/blob/stratified_last/examples/metatheory/MicroFStar.fst): Fragment of F\* formalized in F\*
-    - [Wys*](http://research.microsoft.com/en-us/um/people/nswamy/papers/wys.pdf): Verified DSL for secure multi-party computations
-    - [ReVer](https://github.com/msr-quarc/ReVerC): Verified compiler to reversible circuits
-  - F\*'s new metaprogramming framework increasingly used in **[Everest](https://project-everest.github.io/)**
+## Uses of F\* in Project Everest ##
+
+- **[Project Everest](https://project-everest.github.io/): verify and deploy new, efficient HTTPS stack**
+   - [miTLS](https://github.com/project-everest/mitls-fstar): Verified reference implementation of TLS (1.2 and 1.3)
+   - [EverParse](https://github.com/project-everest/everparse): Verified parsers and formatter generators
+   - [EverCrypt](https://github.com/project-everest/hacl-star/providers/evercrypt): Agile Cryptographic Provider
+   - [HACL\*](https://github.com/mitls/hacl-star): High-Assurance Cryptographic Library
+   - [Vale](https://github.com/project-everest/vale): Verified Assembly Language for Everest
+
+- **Verified Everest code deployed in**
+   - Firefox (Mozilla NSS crypto)
+   - Windows (WinQUIC)
+   - Azure Confidential Consortium (Verified Merkle tree for the blockchain)
+   - WireGuard VPN
+   - Zinc crypto library for Linux
+   - Tezos and Concordium blockchains
+      
+<!------------------------------------------------------------------------------>
+
+# EverCrypt: A No-Excuses, Verified Cryptographic Provider
+
+
+~Center
+[![EverCrypt-table]](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
+~
+
+* 180KLOC of code & proof, producing 40KLOC of verified C & assembly
+  - Memory safe
+  - Functionally correct
+  - Side-channel resistant
+  
+[EverCrypt-table]: ../../stuff/EverCrypt-table.png {width=900px}
+
+
+# AES-GCM: Authenticated Encryption for 90% of Secure Internet Traffic
+
+
+~Center
+[![EverCrypt-perf]](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
+~
+
+[EverCrypt-perf]: ../../stuff/EverCrypt-perf.png 
 
 # The current F* team #
 
