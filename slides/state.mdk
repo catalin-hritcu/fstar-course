@@ -32,7 +32,7 @@ University of Luxembourg, 1-2 July 2019
 
 <!------------------------------------------------------------------------------>
 
-## Recap of yesterday: Functional core of F\* ## {#fcore}
+## Recap: Functional core of F\* ## {#fcore}
 
 * **[Variant of dependent type theory]{color:DarkBlue}**
   - $\lambda$, $\Pi$, inductives, matches, universe polymorphism
@@ -56,7 +56,7 @@ University of Luxembourg, 1-2 July 2019
 
 ## Schedule ##
 
-* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
+* Today: A Gentle Introduction to F\* (Purely Functional Programs)
 
 * **Today: Verifying Stateful Programs in F\***
 
@@ -286,20 +286,11 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 
 <!------------------------------------------------------------------------------>
 
-## Exercise: Stateful Factorial ##
-`FactorialST.fst`
-```
-[INCLUDE=../../../ex/FactorialST.fst:factorial_ex]
-```
-
-
-<!------------------------------------------------------------------------------>
-
 ## Stateful invariants (mutable non-empty lists) ##
 
 ```
 module NList
-  abstract type nlist = xs:list int{Cons? xs}
+  abstract type nlist = xs:(list int){Cons? xs}
 
   let create (x:int) : St (ref nlist) = alloc #nlist [x]
 
@@ -358,10 +349,14 @@ module NListClient
 
 <!------------------------------------------------------------------------------>
 
+<!-- TODO: Not sure whether to keep this or not. It's all too low level, and it will change.
+           - Could also look at what Nik has, but it's probably complicated too.
+           - Could also just go through very quickly. *)
+
 ## Low*: programming and verifying low-level C code ##
 
 * **Low\*:** a subset of F\* that
-  - enjoys compilation to C through its companion compiler KreMLin
+  - enjoys compilation to C through the KreMLin tool
   - provides F\* libraries that model a curated set of C features:
     + C memory model
     + stack- and heap-allocated arrays
@@ -448,7 +443,7 @@ uint64_t f()
 
 ## Next steps in this course ##
 
-* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
+* Today: A Gentle Introduction to F\* (Purely Functional Programs)
 
 * Today: Verifying Stateful Programs in F\*
 
