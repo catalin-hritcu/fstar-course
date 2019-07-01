@@ -37,11 +37,11 @@ University of Luxembourg, 1-2 July 2019
 
 * **Today: A Gentle Introduction to F\* (Purely Functional Programs)**
 
-* Today: Verifying Stateful Programs in F\*
+* Tomorrow: Verifying Stateful Programs in F\*
 
 * Tomorrow: Monotonic State in F\*
 
-* Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\*
+<!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->
 
 ~Fragment
 Slides, code, exercises, and setup instructions at<br/>
@@ -84,13 +84,13 @@ but only very weak logics
     <!-- ``` -->
     <!-- let incr (r:ref a) = r := !r + 1 -->
     <!-- ``` -->
-  - F\* extracted to OCaml or F\# by default
-  - subset of F\* extracted to efficient C code
+  <!-- - F\* extracted to OCaml or F\# by default -->
+  <!-- - subset of F\* extracted to efficient C code -->
 
 * {.fragment} **[Semi-automated verification system using SMT]{color:DarkBlue;}**
   - like Dafny, FramaC, Why3, Liquid Types, ...
 
-* {.fragment} **[With an expressive core language based on dependent type theory]{color:DarkRed;}**
+* {.fragment} **[Expressive core based on dependent type theory]{color:DarkRed;}**
   <!-- - full dependency, inductive types, universe polymorphism -->
   - like Coq, Agda, Lean, Nuprl, ...
 
@@ -530,6 +530,7 @@ val factorial : nat -> Dv nat
         eval_closed (subst (sub_beta e2) e1')
     | Lam e1 -> Lam e1
   ```
+* {.fragment} Match exhaustiveness check also semantic (via SMT)
 * {.fragment}`Dv` is also just an abbreviation
 ```
 Dv t = Div t (requires True) (ensures (fun _ -> True))
@@ -726,8 +727,6 @@ let rec progress #e #t h =
 ```
 ~
 
-* {.fragment} **Note:** match exhaustiveness check also semantic (via SMT)
-
 <!------------------------------------------------------------------------------>
 
 ## Functional core of F\* ## {#fcore}
@@ -816,9 +815,9 @@ got expression "s1" of type "Stack.stack"
 
 * Today: A Gentle Introduction to F\* (Purely Functional Programs)
 
-* **Today: Verifying Stateful Programs in F\***
+* **Tomorrow: Verifying Stateful Programs in F\***
 
 * Tomorrow: Monotonic State in F\*
 
-* Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\*
+<!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->
 
