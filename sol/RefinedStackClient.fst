@@ -17,4 +17,7 @@ let main() =
   assert (i = 4);
 
   let s3 = pop s2 (* <: stack *) in
-  assert (s3 == s1)
+  assert (s3 == s1);
+
+  let s4 = pop s3 in
+  assert (s4 == s0)
