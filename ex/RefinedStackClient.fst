@@ -2,9 +2,18 @@ module RefinedStackClient
 
 open RefinedStack
 
-let main() : Tot stack =
-  let s = push 1 (push 2 (push 3 empty)) in
-  let t = top s in
-  let s' = pop s in s'
-  (* pop s' -- Subtyping check failed;
-       expected type (s:stack{~(is_empty s)}); got type stack *)
+[@(expect_failure [19])] (* Remove this attribute *)
+let main() =
+  let s0 : stack = empty in
+  assert (is_empty s0);
+
+  let s1 : stack = push 3 s0 in
+  assert (~(is_empty s1));
+
+  let s2 : stack = push 4 s1 in
+  assert (~(is_empty s2));
+
+  let i : int = top s2 in
+
+  let s3 : stack = pop s2 in
+  assert (s3 == s1)    (* <-- Reimplement RefinedStack to make this work *)

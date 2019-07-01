@@ -5,7 +5,7 @@ all:
 	$(FSTAR) Stack.fsti
 	$(FSTAR) Stack.fst
 	$(FSTAR) StackClient.fst
-	$(FSTAR) RefinedStack.fsti
+	$(FSTAR) RefinedStackClient.fst
 	$(FSTAR) SumST.fst
 	$(FSTAR) FactorialST.fst
 	$(FSTAR) InitFreezeMST.fst
