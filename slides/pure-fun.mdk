@@ -133,7 +133,7 @@ but only very weak logics
    - WireGuard VPN
    - Zinc crypto library for Linux
    - Tezos and Concordium blockchains
-      
+
 <!------------------------------------------------------------------------------>
 
 # EverCrypt: A No-Excuses, Verified Cryptographic Provider
@@ -147,7 +147,7 @@ but only very weak logics
   - Memory safe
   - Functionally correct
   - Side-channel resistant
-  
+
 [EverCrypt-table]: ../../stuff/EverCrypt-table.png {width=900px}
 
 
@@ -157,7 +157,7 @@ but only very weak logics
 [![EverCrypt-perf]{heigth=60%}](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
 ~
 
-[EverCrypt-perf]: ../../stuff/EverCrypt-perf.png 
+[EverCrypt-perf]: ../../stuff/EverCrypt-perf.png
 
 # The current F* team #
 
@@ -185,7 +185,7 @@ but only very weak logics
 ~~ Column {width 50%}
 - Asher Manning
 - Guido Martínez
-- Zoe Paraskevopoulou 
+- Zoe Paraskevopoulou
 - Clément Pit-Claudel
 - Jonathan Protzenko
 - Ramkumar Ramachandra
@@ -229,7 +229,7 @@ but only very weak logics
 * {.fragment} Recursive functions
   ```
   val factorial : nat -> nat
-  
+
   let rec factorial n =
     if n = 0 then 1 else n * (factorial (n - 1))
   ```
@@ -241,7 +241,7 @@ but only very weak logics
     | Cons : hd:a -> tl:list a -> list a
 
   val map : ('a -> 'b) -> list 'a -> list 'b
-  
+
   let rec map f x =
     match x with
     | []     -> []
@@ -277,7 +277,7 @@ type nat = x:int{x >= 0}
 * {.fragment} Refinements eliminated by **subtyping**: ` nat <: int`
   ```
   let i : int = factorial 42
-  
+
   let f : x:nat{x > 0} -> int = factorial
   ```
 
@@ -341,7 +341,7 @@ type nat = x:int{x >= 0}
 
   val length : #a:Type -> list a -> nat
   let rec length #a l = match l with | Nil -> 0 | Cons _ tl -> 1 + length tl
-    
+
   val lookup : #a:Type -> l:list a -> m:nat{m `less_than` (length l)} -> a
   let rec lookup #a l m = ...
   ```
@@ -406,13 +406,13 @@ type nat = x:int{x >= 0}
   - {.fragment} evaluator for lambda terms
     ```
     val eval : exp -> Dv exp
-    let rec eval e = 
+    let rec eval e =
       match e with
       | App (Lam x e1) e2 -> eval (subst x e2 e1)
       | App e1 e2         -> eval (App (eval e1) e2)
       | Lam x e1          -> Lam x (eval e1)
       | _                 -> e
-    
+
     let main () = eval (App (Lam 0 (App (Var 0) (Var 0)))
                             (Lam 0 (App (Var 0) (Var 0))))
     ```
@@ -542,7 +542,7 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
 
 * **Two classes of types**
   - [Value types (`t`):]{color:DarkBlue} `int`, `list int`, ...
-  - [Computation types (`C`):]{color:DarkRed} ` Tot t`, ` Dv t`, ` GTot t`
+  - [Computation types (`C`):]{color:DarkRed} `Tot t`, ` Dv t`<!-- , `GTot t` -->
 
 * {.fragment} **Dependent (effectful) function types** of the form: ` x:t -> C`
   - argument can't have side-effects, so a value type
@@ -553,7 +553,7 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
   - [Refined computation types:]{color:DarkRed}
     - `Pure t pre post`
     - `Div t pre post`
-    - `Ghost t pre post`
+    <!-- - `Ghost t pre post` -->
     - these will get more interesting for more interesting effects
 
 <!------------------------------------------------------------------------------>
@@ -618,71 +618,28 @@ Lemma (pre) (post) = Pure unit (requires pre) (ensures (fun _ -> post))
 - proof doesn't follow the structure of the program
 -->
 ```
-let snoc l h = l @ [h]
-
-val rev : #a:Type -> list a -> Tot (list a)
-
-let rec rev (#a:Type) l =
-  match l with
-  | []     -> []
-  | hd::tl -> snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev]
 ```
 ~Fragment
 ```
-val rev_snoc : #a:Type -> l:list a -> h:a ->
-                                        Lemma (rev (snoc l h) == h::rev l)
-
-
-let rec rev_snoc (#a:Type) l h =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_snoc tl h
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_snoc]
 ```
 ~
 ```
-val rev_involutive : #a:Type -> l:list a -> Lemma (rev (rev l) == l)
-
-let rec rev_involutive (#a:Type) l =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_involutive tl; rev_snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_involutive]
 ```
 
 ## Often lemmas are unavoidable ([but SMT can help]{color:DarkBlue}) ##
-<!-- need lemma for 3 reasons:
-- as before, this property is rather arbitrary
-- this property is "relational" (2 calls to reverse)
-- proof doesn't follow the structure of the program
--->
 ```
-let snoc l h = l @ [h]
-
-val rev : #a:Type -> list a -> Tot (list a)
-
-let rec rev (#a:Type) l =
-  match l with
-  | []     -> []
-  | hd::tl -> snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev]
 ```
 
 ```
-val rev_snoc : #a:Type -> l:list a -> h:a -> 
-                                        Lemma (rev (snoc l h) == h::rev l)
-                                        [SMTPat (rev (snoc l h))]
-                                            
-let rec rev_snoc (#a:Type) l h =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_snoc tl h
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_snoc2]
 ```
 
 ```
-val rev_involutive : #a:Type -> l:list a -> Lemma (rev (rev l) == l)
-
-let rec rev_involutive (#a:Type) l =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_involutive tl (*; rev_snoc (rev tl) hd*)
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_involutive2]
 ```
 
 <!------------------------------------------------------------------------------>
@@ -820,4 +777,3 @@ got expression "s1" of type "Stack.stack"
 * Tomorrow: Monotonic State in F\*
 
 <!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->
-
