@@ -28,5 +28,15 @@ Know: rev (rev (hd::tl)) = rev (snoc (rev tl) hd)
 Know (IH): rev (rev tl) == tl
 To show: rev (rev (hd::tl)) == hd::tl
 by lemma: rev (rev (hd::tl)) = rev (snoc (rev tl) hd) =(!) hd :: rev (rev tl)
-Still to show: hd :: rev (rev tl) == hd::tl -- by IH + injectivity of Cons
+Still to show: hd :: rev (rev tl) == hd::tl -- by IH + injectivity of Consmodule Sum
+
+open FStar.Mul
+
+let rec sum_rec (n:nat) = if n > 0 then n + sum_rec (n - 1) else 0
+
+let sum_tot (n:nat) : nat = ((n + 1) * n) / 2
+
+let rec sum_rec_correct (n:nat) : Lemma (sum_rec n = sum_tot n) =
+
+  admit()                       (* replace this admit with a real proof *)
 *)
