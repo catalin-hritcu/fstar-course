@@ -421,8 +421,7 @@ type nat = x:int{x >= 0}
     ./Divergence.exe
     ```
     ~
-  - {.fragment} web servers
-  - {.fragment} ...
+  - {.fragment} web servers, ...
 
 <!------------------------------------------------------------------------------>
 
@@ -753,28 +752,24 @@ let rec progress #e #t h =
 
 <!------------------------------------------------------------------------------>
 
-## Exercise2: Simply typed stacks (the interface) ##
+## Abstract types: an interface ##
 `Stack.fsti`
 ```
-[INCLUDE=../../../ex/Stack.fsti:stack_types]
-```
-```
-[INCLUDE=../../../ex/Stack.fsti:stack_lemmas]
+[INCLUDE=../../../code/pure-fun/Stack.fsti]
 ```
 
-## Exercise 2: Simply typed stacks (the implementation) ##
-`Stack.fst`
-```
-[INCLUDE=../../../ex/Stack.fst]
-```
-
-## Exercise 2: Simply typed stacks (the client) ##
+## A client of this interface ##
 `StackClient.fst`
 ```
-[INCLUDE=../../../ex/StackClient.fst]
+[INCLUDE=../../../code/pure-fun/StackClient.fst]
 ```
 
-<!--
+## An implementation using lists of ints ##
+`Stack.fst`
+```
+[INCLUDE=../../../code/pure-fun/Stack.fst]
+```
+
 ## Clients cannot break abstraction ##
 `StackClientBad.fst`
 ```
@@ -782,33 +777,38 @@ let rec progress #e #t h =
 ```
 ~Fragment{.console}
 ```text
-fstar.exe StackClientBad.fst
+[hritcu@detained pure-fun]$ fstar.exe StackClientBad.fst
 ./StackClientBad.fst(6,9-6,11): (Error)
 Expected expression of type "Prims.list ((*?u13*) _ s0 s1)";
 got expression "s1" of type "Stack.stack"
 ```
 ~
--->
 
-## Exercise 3: Refinement-typed stacks ##
-`RefinedStack.fsti`
-```
-[INCLUDE=../../../ex/RefinedStack.fsti]
-```
+## Using refinement types for stacks ##
 
-* {.fragment} **Goal:** type a variant of `StackClient.fst` (now without `Some?.v`'s)
 ```
-let main () =
-    ...
-    let s3 = pop s2 (* <: stack *) in
-    assert (s3 == s1)
+[INCLUDE=../../../code/pure-fun/RefinedStack.fst]
 ```
 
-<!-- TODO: consider reverting the stack examples?
-+ type abstraction no longer introduced ... no big loss here, but still?
-+ simple stacks too complicated? wasn't even an exercise before?
-+ Refinement-typed stacks not properly motivated ... want to do double pop!
--->
+## Client for RefinedStack ##
+
+```
+[INCLUDE=../../../ex/RefinedStackClient.fst]
+```
+
+* {.fragment} Exercise 2: redesign `RefinedStack` interface so that this works
+
+## A more interesting variant (1) ##
+
+```
+[INCLUDE=../../../sol/RefinedStack.fsti]
+```
+
+## A more interesting variant (2) ##
+
+```
+[INCLUDE=../../../sol/RefinedStackClient.fst]
+```
 
 <!------------------------------------------------------------------------------>
 
