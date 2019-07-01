@@ -226,13 +226,11 @@ but only very weak logics
 
 ## The functional core of F\* ##
 
-* {.fragment} Recursive functions
-  ```
-  val factorial : nat -> nat
+* Recursive functions
 
-  let rec factorial n =
-    if n = 0 then 1 else n * (factorial (n - 1))
-  ```
+```
+[INCLUDE=../../../code/pure-fun/Fact.fst:factorial]
+```
 
 * {.fragment} (Simple) inductive datatypes and pattern matching
   ```
