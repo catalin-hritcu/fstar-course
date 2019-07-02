@@ -192,6 +192,9 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 ~
 <!--* {.fragment} **Note:** This variant is correct even when `r1` and `r2` are aliased-->
 
+<!-- TODO: WARNING this proof only works for the unaliased case,
+           even if the statement should be also true for the aliased case -->
+
 <!------------------------------------------------------------------------------>
 
 ## Integer reference swapping (the funny way) ##

@@ -1,31 +1,39 @@
 module SwapIntRefsST
 
 open FStar.Ref
-open FStar.IO
 
 // BEGIN: swap_add_sub
 val swap_add_sub : r1:ref int -> r2:ref int ->
   ST unit (requires (fun _ -> addr_of r1 <> addr_of r2 ))
-          (ensures  (fun h0 _ h1 -> modifies !{r1,r2} h0 h1 /\
-                                    sel h1 r1 == sel h0 r2 /\
-                                    sel h1 r2 == sel h0 r1))
+          (ensures  (fun h0 _ h3 -> modifies !{r1,r2} h0 h3 /\
+                                    sel h3 r1 == sel h0 r2 /\
+                                    sel h3 r2 == sel h0 r1))
 let swap_add_sub r1 r2 =
   r1 := !r1 + !r2;
-  (*Know (P1) : exists h1. modifies !{r1} h0 h1 /\ sel h1 r1 = (sel h0 r1) + (sel h0 r2) *)
+  (*Know (P1) : exists h1. modifies !{r1} h0 h1
+                        /\ sel h1 r1 = (sel h0 r1) + (sel h0 r2) *)
   r2 := !r1 - !r2;
-  (*Know (P2) : exists h2. modifies !{r2} h1 h2 /\ sel h2 r2 = (sel h1 r1) - (sel h1 r2) *)
+  (*Know (P2) : exists h2. modifies !{r2} h1 h2
+                        /\ sel h2 r2 = (sel h1 r1) - (sel h1 r2) *)
   r1 := !r1 - !r2
-  (*Know (P3) :            modifies !{r1} h2 h3 /\ sel h3 r1 = (sel h2 r1) - (sel h2 r2) *)
+  (*Know (P3) :            modifies !{r1} h2 h3
+                        /\ sel h3 r1 = (sel h2 r1) - (sel h2 r2) *)
 
-  (* F* computed precondition for this code is fun _ -> True  *)
-  (* F* computed postcondition for this code is (more or less)
-     fun h0 _ h3 -> exists h1 h2. (P1).formula /\ (P2).formula /\ (P3).formula , where .formula removes exists*)
-  (*to show : user-provided precondition ==> F* computed precondtion . Easy*)
-  (*to show : F* computed postcondition ==> user-provided postcondition (rename h1 by h3 for better readability)*)
-       (* - by hypothesis we change nothing but r1 and r2 so the following holds :  modifies !{r1,r2} h0 h3*)
-       (* - Besides thanks to the hypothesis we can directly comupute (sel h3 ri) and it is what we want *)
-  
+  (* F* computed pre for this code is `fun _ -> True` *)
+  (* F* computed post for this code is `fun h0 _ h3 -> (P1) /\ (P2) /\ (P3)` *)
+  (* to show (1) : user-provided pre ==> F* computed pre (=True). Trivial. *)
+  (* - by additivity of modifies we get `modifies !{r1,r2} h0 h3` *)
+  (* to show (2): F* computed post /\ user-provided pre ==> user-provided post *)
+  (* - for instance, to show `sel h3 r1 == sel h0 r2` we reason as follows:
+          sel h3 r1 = (sel h2 r1) - (sel h2 r2)                    -- by (P3)
+                    = (sel h2 r1) - ((sel h1 r1) - (sel h1 r2))    -- by (P2)
+                    = sel h1 r2     -- by arithmetic and absence of underflows
+                    = sel h0 r2     -- by `addr_of r1 <> addr_of r2`
+                                       and `modifies !{r1} h0 h1`
+      *)
 // END: swap_add_sub
+
+open FStar.IO
 
 let main =
   let r1 = alloc 1 in
