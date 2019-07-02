@@ -752,6 +752,9 @@ got expression "s1" of type "Stack.stack"
 
 * {.fragment} Exercise 2: redesign `RefinedStack` interface so that this works
 
+<!-- TODO: also show the simpler variant: see sol/RefinedStackLength*
+           (also have a stash about that -->
+
 ## A more interesting variant (1) ##
 
 ```
