@@ -34,13 +34,11 @@ University of Luxembourg, 1-2 July 2019
 
 ## Schedule ##
 
-* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
+* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
 
-* Yesterday: Verifying Stateful Programs in F\*
+* Today: Verifying Stateful Programs in F\*
 
-* **Today: Monotonic State in F\***
-
-* Today: F\*'s Extensible Effect System and Metaprogramming in F\*
+* **Maybe Today: Monotonic State in F\***
 
 <!-------------------------------------------------------------------------------->
 
@@ -247,7 +245,7 @@ University of Luxembourg, 1-2 July 2019
 
 ## ML-style Typed References ##
 
-* Typed references from yesterday's lecture are just an instance of mrefs
+* Typed references from previous lecture are just an instance of mrefs
   ```
   type ref a = mref a (fun _ _ -> True)
   ```
@@ -430,12 +428,11 @@ let main() : St unit =
 
 5. Frozen arrays can only be read
 
-  * no mutation of array elements
+  - no mutation of array elements
 
-  * no initialization preconditions for reading
+  - no initialization preconditions for reading
 
-
-* Show this works as expected with client code similar to previous slide
+Show this works as expected with client code similar to previous slide
 
 <!------------------------------------------------------------------------------>
 
@@ -500,20 +497,6 @@ let main() : St unit =
   ```
 
 * {.fragment} `alloc`, `!`, `:=`, `tokens` are derived from `MST` actions and `witnessed`
-
-
-<!------------------------------------------------------------------------------>
-
-## Next in this course ##
-
-* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
-
-* Yesterday: Verifying Stateful Programs in F\*
-
-* Today: Monotonic State in F\*
-
-* **Today: F\*'s Extensible Effect System and Metaprogramming in F\***
-
 
 
 <!------------------------------------------------------------------------------>

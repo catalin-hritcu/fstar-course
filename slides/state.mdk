@@ -197,14 +197,14 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 ## Integer reference swapping (the funny way) ##
 
 ```
-[INCLUDE=../../../code/state/SwapIntRefsST.fst:swap_add_sub]
+[INCLUDE=../../../ex/SwapIntRefsST.fst:swap_add_sub]
 ```
 
 * Correctness of this variant relies on `r1` and `r2` not being aliased
 
 * ... and on `int` being unbounded (mathematical) integers<br/><br/>
 
-* {.fragment} **Exercise:** Sketch a hand proof that this code is correct
+* {.fragment} **Exercise 0:** Sketch a hand proof that this code is correct
 
 <!-- ~Block {.console} -->
 <!-- ```text -->
@@ -221,8 +221,7 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 <!-- [INCLUDE=../../../ex/FactorialST.fst:fact] -->
 <!-- ``` -->
 
-<!-- This is exercise is flaky when run with --verify_all
-     https://github.com/FStarLang/FStar/issues/1281 -->
+<!-- This is exercise used to be flaky because of the non-linear arithmetic -->
 
 <!-- DONE: removed! nothing of value was lost
         Another confusing thing about this example is that it
@@ -315,7 +314,7 @@ module NListClient
 ```
 ~
 
-* {.fragment} Tomorrow we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+* {.fragment} Maybe later we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
 
 <!------------------------------------------------------------------------------>
 
@@ -442,10 +441,24 @@ uint64_t f()
 
 ## Next steps in this course ##
 
-* Today: A Gentle Introduction to F\* (Purely Functional Programs)
+* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
 
 * Today: Verifying Stateful Programs in F\*
 
-* **Tomorrow: Monotonic State in F\***
+* **Maybe Today: Monotonic State in F\***
 
-* **Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\***
+## Learning more about F*, further materials ##
+
+<!-- further materials for people who want to learn more about F*: -->
+
+- [EUTypes'18 slides] on monotonic state, monadic effects, Dijkstra monads, tactics, etc.
+- [F* tutorial] (Chapters 1-7): verifying pure functional programs
+- [Low* tutorial]: verifying low-level stateful programs
+- [Nik's OPLSS'19 course] (including video): large-scale case studies
+- https://www.fstar-lang.org has all the F* papers
+- https://github.com/FStarLang/FStar has code, examples, issues, wiki, etc
+
+[EUTypes'18 slides]: https://danel.ahman.ee/teaching/eutypes2018/index.html
+[F* tutorial]: https://www.fstar-lang.org/tutorial/
+[Low* tutorial]: https://fstarlang.github.io/lowstar/html
+[Nik's OPLSS'19 course]: https://fstar-lang.org/oplss2019/

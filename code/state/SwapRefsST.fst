@@ -3,12 +3,12 @@ module SwapRefsST
 open FStar.Ref
 
 // BEGIN: swap
-val swap : r1:ref int -> r2:ref int ->
+val swap : #a:Type -> r1:ref a -> r2:ref a ->
   ST unit (requires (fun _ -> True))
           (ensures  (fun h0 _ h3 -> modifies !{r1,r2} h0 h3 /\
                                     sel h3 r2 == sel h0 r1 /\
                                     sel h3 r1 == sel h0 r2))
-let swap r1 r2 =
+let swap #a r1 r2 =
   let t = !r1 in
    (* Know (P1): exists h1 t. h0 == h1 /\ t == sel h0 r1 *)
   r1 := !r2;

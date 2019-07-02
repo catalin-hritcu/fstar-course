@@ -6,7 +6,6 @@ all:
 	$(FSTAR) ST.fsti
 	$(FSTAR) IncrST.fst
 	$(FSTAR) Incr2ST.fst
-	$(FSTAR) SwapIntRefsST.fst
 	$(FSTAR) SwapRefsST.fst
 	$(FSTAR) CountST.fst
 	$(FSTAR) FibonacciST.fst
