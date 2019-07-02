@@ -39,7 +39,7 @@ let read (#a:Type) (r:eref a) : ST a (requires (fun h -> ~(Empty? (sel h r))))
                               (sel h r == Mutable v \/ sel h r == Frozen v)))
   = match (!r) with | Mutable v | Frozen v -> v
 
-                                                 (* Exercise: Try to give a heap-independent precondition to read so that the file still verifies *)
+(* Exercise: Try to give a heap-independent precondition to read so that the file still verifies *)
 
 let write (#a:Type) (r:eref a) (v:a) :
       ST unit (requires (fun h -> ~(Frozen? (sel h r))))
@@ -49,7 +49,8 @@ let write (#a:Type) (r:eref a) (v:a) :
 let freeze (#a:Type) (r:eref a) :
       ST unit (requires (fun h0 -> True))
               (ensures (fun h0 _ h1 -> True))
-  = admit(); r := Frozen (Mutable?.v !r)          (* Exercise: Give freeze a more precise type so that one could remove the two admits *)
+  = admit(); r := Frozen (Mutable?.v !r)
+(* Exercise: Give freeze a more precise type so that one could remove the two admits *)
 
 assume val complex_procedure (r:eref int) : St unit
 

@@ -16,8 +16,9 @@ let evolve_broken' (a:Type) = fun r1 r2 ->
   | Mutable _, Mutable _ -> True
   | Mutable v1, Frozen v2 -> v1 == v2
   | _, _ -> False
-(* let evolve_broken (a:Type) : Tot (preorder (rstate a)) = evolve_broken' a
-   -- fails as it should *)
+
+[@expect_failure]
+let evolve_broken (a:Type) : Tot (preorder (rstate a)) = evolve_broken' a
 
 let evolve' (a:Type) = fun r1 r2 ->
   match r1, r2 with

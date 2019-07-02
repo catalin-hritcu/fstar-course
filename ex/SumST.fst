@@ -3,9 +3,9 @@ module SumST
 open FStar.Ref
 open FStar.Mul
 
-// BEGIN: sum_rec
+// BEGIN: sum_tot
 let sum_tot (n:nat) = ((n+1) * n) / 2  (* equal to sum_rec, see lect. 1 *)
-// END: sum_rec
+// END: sum_tot
 
 (* Exercise: strengthen spec of sum_st' below so that sum_st verifies without admit *)
 

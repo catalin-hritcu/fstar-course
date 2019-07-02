@@ -193,7 +193,7 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 <!--* {.fragment} **Note:** This variant is correct even when `r1` and `r2` are aliased-->
 
 <!-- TODO: WARNING this proof only works for the unaliased case,
-           even if the statement should be also true for the aliased case -->
+           even if the statement is also true for the aliased case -->
 
 <!------------------------------------------------------------------------------>
 
@@ -208,6 +208,15 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 * ... and on `int` being unbounded (mathematical) integers<br/><br/>
 
 * {.fragment} **Exercise 0:** Sketch a hand proof that this code is correct
+
+## Solution ##
+
+```
+[INCLUDE=../../../sol/SwapIntRefsST.fst:swap_add_sub]
+```
+
+<!-- TODO: This is un-necessarily tricky. Had to tell them how subeffecting works for St,
+           and it aint simple. Alternative would be to move the pre as a premise of post. -->
 
 <!-- ~Block {.console} -->
 <!-- ```text -->
@@ -259,7 +268,7 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 ## Stateful sum: 1 + 2 + 3 + ... ##
 ~Fragment
 ```
-[INCLUDE=../../../ex/SumST.fst:sum_rec]
+[INCLUDE=../../../ex/SumST.fst:sum_tot]
 ```
 ~
 ```
@@ -268,6 +277,8 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 
 * {.fragment} **Exercise:** Strengthen the spec of `sum_st'` to remove `admit` in `sum_st`
 
+<!-- TODO: This exercise's solution is even syntactically similar to previous example.
+           Doesn't require much thinking -->
 
 
 <!------------------------------------------------------------------------------>
@@ -317,7 +328,11 @@ module NListClient
 ```
 ~
 
-* {.fragment} Maybe later we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+* {.fragment} Later we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+
+<!-- TODO: Unnecessary discrepancies between this and monotonic log example in next lecture:
+     - here we take `suffix` as the preorder, while there we take subset
+-->
 
 <!------------------------------------------------------------------------------>
 
@@ -394,20 +409,23 @@ module NListClient
 ~Fragment
   ```
   let equal_domains (m0 m1: mem) =
-    get_tip m0 == get_tip m1 /\         (* leaves the C call stack intact *)
+    get_tip m0 == get_tip m1 /\           (* leaves the C call stack intact *)
     Set.equal (Map.domain (get_hmap m0))
               (Map.domain (get_hmap m1)) /\
-                                (* does not (de)allocate any heap regions *)
-    same_refs_in_all_regions m0 m1
-                                 (* does not allocate in existing regions *)
+                                  (* does not (de)allocate any heap regions *)
+    same_refs_in_all_regions m0 m1 (* does not allocate in existing regions *)
   ```
 ~
+
+<!-- TODO: This last one is quite gory -->
 
 * {.fragment} Additional effects for [**heap-allocating**]{color:DarkBlue} and [**arbitrary**]{color:DarkRed} low-level code
 
 <!------------------------------------------------------------------------------>
 
 ## Low*: a small example ##
+
+<!-- Would be nice to show something with a specification -->
 
 ```
 let f (): Stack UInt64.t (requires (fun _ -> True))
