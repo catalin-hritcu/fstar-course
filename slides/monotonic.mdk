@@ -413,8 +413,28 @@ let main() : St unit =
   assert (x == 0)
 ```
 
+## Learning more about F*, further materials ##
 
-<!------------------------------------------------------------------------------>
+<!-- further materials for people who want to learn more about F*: -->
+
+- [EUTypes'18 slides] on monotonic state, monadic effects, Dijkstra monads, tactics, etc.
+- [F* tutorial] (Chapters 1-7): verifying pure functional programs
+- [Low* tutorial]: verifying low-level stateful programs
+- [Nik's OPLSS'19 course] (including video): large-scale case studies
+- [https://www.fstar-lang.org] has all the F* papers
+- [https://github.com/FStarLang/FStar] has code, examples, issues, wiki, etc
+
+[EUTypes'18 slides]: https://danel.ahman.ee/teaching/eutypes2018/index.html
+[F* tutorial]: https://www.fstar-lang.org/tutorial/
+[Low* tutorial]: https://fstarlang.github.io/lowstar/html
+[Nik's OPLSS'19 course]: https://fstar-lang.org/oplss2019/
+[https://www.fstar-lang.org]: https://www.fstar-lang.org
+[https://github.com/FStarLang/FStar]: https://github.com/FStarLang/FStar
+
+<!-- CH: Didn't get to this at VTSA, and it looks a bit technical,
+         so I wold have to look at it more carefully
+
+<\!-----------------------------------------------------------------------------\->
 
 ## Exercise: Initializable and Freezable Arrays ##
 
@@ -434,7 +454,7 @@ let main() : St unit =
 
 Show this works as expected with client code similar to previous slide
 
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## How the Sausage is Made (`MST`) ##
 
@@ -467,7 +487,7 @@ Show this works as expected with client code similar to previous slide
   ```
 ~
 
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## How the Sausage is Made (`ST`, much simplified) ##
 
@@ -499,10 +519,12 @@ Show this works as expected with client code similar to previous slide
 * {.fragment} `alloc`, `!`, `:=`, `tokens` are derived from `MST` actions and `witnessed`
 
 
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## Bonus Material: Temporarily Escaping the Preorder ##
 
 <br />
 
 (see Snapshots.fst)
+
+-->

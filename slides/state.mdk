@@ -449,19 +449,3 @@ uint64_t f()
 * Today: Verifying Stateful Programs in F\*
 
 * **Maybe Today: Monotonic State in F\***
-
-## Learning more about F*, further materials ##
-
-<!-- further materials for people who want to learn more about F*: -->
-
-- [EUTypes'18 slides] on monotonic state, monadic effects, Dijkstra monads, tactics, etc.
-- [F* tutorial] (Chapters 1-7): verifying pure functional programs
-- [Low* tutorial]: verifying low-level stateful programs
-- [Nik's OPLSS'19 course] (including video): large-scale case studies
-- https://www.fstar-lang.org has all the F* papers
-- https://github.com/FStarLang/FStar has code, examples, issues, wiki, etc
-
-[EUTypes'18 slides]: https://danel.ahman.ee/teaching/eutypes2018/index.html
-[F* tutorial]: https://www.fstar-lang.org/tutorial/
-[Low* tutorial]: https://fstarlang.github.io/lowstar/html
-[Nik's OPLSS'19 course]: https://fstar-lang.org/oplss2019/
