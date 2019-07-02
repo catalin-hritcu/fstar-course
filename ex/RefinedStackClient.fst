@@ -2,7 +2,7 @@ module RefinedStackClient
 
 open RefinedStack
 
-[@(expect_failure [19])] (* Remove this attribute *)
+[@expect_failure] (* Remove this attribute *)
 let main() =
   let s0 = empty in
   assert (is_empty s0);
@@ -16,4 +16,6 @@ let main() =
   let i = top s2 in
 
   let s3 = pop s2 in
-  assert (s3 == s1)    (* <-- Reimplement RefinedStack to make this work *)
+
+  let s4 = pop s3 in (* <-- Reimplement RefinedStack to make this work *)
+  ()
