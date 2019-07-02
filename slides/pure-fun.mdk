@@ -739,7 +739,7 @@ got expression "s1" of type "Stack.stack"
 ~
 
 ## Using refinement types for stacks ##
-
+Writing both module in interface in the same file.
 ```
 [INCLUDE=../../../code/pure-fun/RefinedStack.fst]
 ```
@@ -752,16 +752,25 @@ got expression "s1" of type "Stack.stack"
 
 * {.fragment} Exercise 2: redesign `RefinedStack` interface so that this works
 
-<!-- TODO: also show the simpler variant: see sol/RefinedStackLength*
-           (also have a stash about that -->
-
-## A more interesting variant (1) ##
+## A simple solution (1) ##
 
 ```
-[INCLUDE=../../../sol/RefinedStack.fsti]
+[INCLUDE=../../../sol/RefinedStackLength.fst]
 ```
 
-## A more interesting variant (2) ##
+## A simple solution (2) ##
+
+```
+[INCLUDE=../../../sol/RefinedStackLengthClient.fst]
+```
+
+## A more interesting solution (1) ##
+
+```
+[INCLUDE=../../../sol/RefinedStack.fst]
+```
+
+## A more interesting solution (2) ##
 
 ```
 [INCLUDE=../../../sol/RefinedStackClient.fst]
