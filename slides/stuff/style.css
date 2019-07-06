@@ -29,12 +29,12 @@
 }
 
 .madoko .reveal pre {
-  width: 42em;
+  width: 48em;
 }
 
-.madoko .reveal li {
-  width: 30em;
-}
+//.madoko .reveal li {
+//  width: 30em;
+//}
 
 .madoko p {
   text-align: center;

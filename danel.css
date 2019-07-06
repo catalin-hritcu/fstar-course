@@ -1,0 +1,41 @@
+BODY {background:#ffffff;font-size:small;}
+
+a:link, a:active,a:visited {color:#0B5FA5; text-decoration:none;}
+
+a:hover {color: #425575}
+
+h1, h2, h3 {color:#043C6B; font-family: Arial, Helvetica, sans-serif;}
+
+h4 {color:#ff2222; font-family: Arial, Helvetica, sans-serif;}
+
+th, td {font-family: Arial, Helvetica, sans-serif;}
+
+hr {
+    border: none;
+    height: 1px;
+    /* Set the hr color */
+    color: #808080; /* old IE */
+    background-color: #808080; /* Modern Browsers */
+}
+
+th {font-weight:bold; text-align:justify;}
+
+B {color:#043C6B; font-weight:bold;}
+
+P,OL,UL,ADDRESS {font-family: Arial, Helvetica, sans-serif;}
+
+.NB {background-color:#ffeeee;}
+
+/* .NB td {border-width:5; border-color:#ff0000; border-style:solid;} */
+
+td.logos {
+    padding-top: 0px;
+    padding-right: 10px;
+}
+
+#education,#employment,#contact,#drafts,#publications,#dissertations,#extended_abstracts,#awards,#talks,#teaching,#community_service {
+    padding-top: 50px;
+    margin-top: -43px;
+}
+
+code.one-liner {font-size:11px;background:lightgray;padding-right:2px;padding-left:2px;padding-top:2px;padding-bottom:2px}

@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : A Gentle Introduction to F*
-Author        : Danel Ahman
+Author        : Catalin hritcu, Nik Swamy
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -22,11 +22,11 @@ HTML Meta     : clear
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
+**[Catalin Hritcu, Inria Paris](https://prosecco.gforge.inria.fr/personal/hritcu)**
 
-[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
+[Summer School on Verification Technology, Systems, and Applications (VTSA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
-Ohrid, Macedonia, 10 August, 2018
+University of Luxembourg, 1-2 July 2019
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
@@ -39,15 +39,14 @@ Ohrid, Macedonia, 10 August, 2018
 
 * Tomorrow: Verifying Stateful Programs in F\*
 
-* Sunday: Monotonic State in F\*
+* Tomorrow: Monotonic State in F\*
 
-* Sunday: F\*'s Extensible Effect System and Metaprogramming in F\*
+<!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->
 
 ~Fragment
-Slides, code, exercises, and setup instructions <br/>@<br/>
-[https://danelahman.github.io/teaching/eutypes2018/](https://danelahman.github.io/teaching/eutypes2018/)
-
-<br/>
+Slides, code, exercises, and setup instructions at<br/>
+[https://prosecco.gforge.inria.fr/personal/hritcu/teaching/vtsa2019](https://prosecco.gforge.inria.fr/personal/hritcu/teaching/vtsa2019)<br/>
+(or via the VTSA website)
 ~
 
 ~Fragment
@@ -59,8 +58,6 @@ Slides, code, exercises, and setup instructions <br/>@<br/>
 ## Program verification: Shall the twain ever meet? ##
 
 <!-- Two, mostly disjoint sides of program verification research -->
-
-\ 
 
 | [Interactive proof assistants]{color:DarkRed;} ||                                 | [Semi-automated verifiers of<br/> imperative programs]{color:DarkBlue;} ||
 |:----------------------:|:-----------------------+:~{background-color:LightBlue}~~:+:--------------------------------:|:---------------------------------|
@@ -84,54 +81,133 @@ but only very weak logics
 <!-- General-purpose -->
 * **[Functional programming language with effects]{color:Black;}**
   - like OCaml, F#, Haskell, ...
-    ```
-    let incr (r:ref a) = r := !r + 1
-    ```
-  - F\* extracted to OCaml or F\# by default
-  - subset of F\* extracted to efficient C code (Low\* and [KreMLin](https://github.com/FStarLang/kremlin))
+    <!-- ``` -->
+    <!-- let incr (r:ref a) = r := !r + 1 -->
+    <!-- ``` -->
+  <!-- - F\* extracted to OCaml or F\# by default -->
+  <!-- - subset of F\* extracted to efficient C code -->
 
-* **[Semi-automated verification system using SMT]{color:DarkBlue;}**
+* {.fragment} **[Semi-automated verification system using SMT]{color:DarkBlue;}**
   - like Dafny, FramaC, Why3, Liquid Types, ...
 
-* **[Interactive proof assistant based on dependent types]{color:DarkRed;}**
+* {.fragment} **[Expressive core based on dependent type theory]{color:DarkRed;}**
   <!-- - full dependency, inductive types, universe polymorphism -->
-  - like Coq, Agda, Lean, ...
+  - like Coq, Agda, Lean, Nuprl, ...
+
+* {.fragment} **[A metaprogramming and tactic framework<br/>
+  for interactive proof and user-defined automation]{color:DarkGreen;}**
+  - like Coq, Lean, Nuprl, Isabelle, HOL, etc.
+
 
 <!-- * {.fragment} Other tools in this space: -->
 <!--   - DML/ATS, HTT, Idris, Trellys/Zombie, CoqHammer, ... -->
   <!-- - But F\* is the closest to bridging the gap by nicely integrating these three things -->
 
+<!------------------------------------------------------------------------------>
 
-<!-------------------------------------------------------------------------------->
-
-## F\* in action, at scale ##
-
-* **[Functional programming language with effects]{color:Black;}**
-  - F\* is programmed in F\*, but not (yet) verified
-
-*  {.fragment} **[Semi-automated verification system]{color:DarkBlue;}**
-  - **[Project Everest](https://project-everest.github.io/)**: verify and deploy new, efficient HTTPS stack
-      - [miTLS*](https://github.com/mitls/mitls-fstar): Verified reference implementation of TLS (1.2 and 1.3)
-      - [HACL\*](https://github.com/mitls/hacl-star): High-Assurance Cryptographic Library
-      - [Vale](https://github.com/project-everest/vale): Verified Assembly Language for Everest
-
-*  {.fragment} **[Proof assistant based on dependent types]{color:DarkRed;}**
-  - Fallback when SMT fails; also for mechanized metatheory
-    - [MicroFStar](https://github.com/FStarLang/FStar/blob/stratified_last/examples/metatheory/MicroFStar.fst): Fragment of F\* formalized in F\*
-    - [Wys*](http://research.microsoft.com/en-us/um/people/nswamy/papers/wys.pdf): Verified DSL for secure multi-party computations
-    - [ReVer](https://github.com/msr-quarc/ReVerC): Verified compiler to reversible circuits
-  - F\*'s new metaprogramming framework increasingly used in **[Everest](https://project-everest.github.io/)**
-
-# The current F\* team #
+# Running F\* Programs
 
 ~Center
-[**Microsoft Research (US, UK, India), Inria Paris, MIT, Rosario, ...**]{color:DarkGreen;}
+![fstar-lowstar-vale-compilation]
 ~
 
-  |   |  
---- | --- |
-[Danel Ahman]{color:DarkBlue}<br/>Benjamin Beurdouche<br/>Karthikeyan Bhargavan<br/>Barry Bond<br/>Antoine Delignat-Lavaud&nbsp;&nbsp;&nbsp;<br/>Victor Dumitrescu<br/>Cédric Fournet<br/>Chris Hawblitzel<br/>Cătălin Hriţcu<br/>Markulf Kohlweiss<br/>Qunyan Mangus<br/>[Kenji Maillard]{color:DarkBlue} | Asher Manning<br/>Guido Martínez<br/>Zoe Paraskevopoulou<br/>Clément Pit-Claudel<br/>Jonathan Protzenko<br/>Tahina Ramananandro<br/>Aseem Rastogi<br/>[**Nikhil Swamy (benevolent dictator)**]{color:DarkRed;}<br/>Christoph M. Wintersteiger<br/>Santiago Zanella-Béguelin<br/>Gustavo Varo | 
+[fstar-lowstar-vale-compilation]: ../../stuff/fstar-lowstar-vale-compilation.png { width=800px }
 
+<!-- TODO: worth mentioning that the ASM and Vale interoperate -->
+
+<!------------------------------------------------------------------------------>
+
+## Uses of F\* in Project Everest ##
+
+- **[Project Everest](https://project-everest.github.io/): verify and deploy new, efficient HTTPS stack**
+   - [miTLS](https://github.com/project-everest/mitls-fstar): Verified reference implementation of TLS (1.2 and 1.3)
+   - [EverParse](https://github.com/project-everest/everparse): Verified parsers and formatter generators
+   - [EverCrypt](https://github.com/project-everest/hacl-star/providers/evercrypt): Agile Cryptographic Provider
+   - [HACL\*](https://github.com/mitls/hacl-star): High-Assurance Cryptographic Library
+   - [Vale](https://github.com/project-everest/vale): Verified Assembly Language for Everest
+
+- **Verified Everest code deployed in**
+   - Firefox (Mozilla NSS crypto)
+   - Windows (WinQUIC)
+   - Azure Confidential Consortium (Verified Merkle tree for the blockchain)
+   - WireGuard VPN
+   - Zinc crypto library for Linux
+   - Tezos and Concordium blockchains
+
+<!------------------------------------------------------------------------------>
+
+# EverCrypt: A No-Excuses, Verified Cryptographic Provider
+
+
+~Center
+[![EverCrypt-table]](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
+~
+
+* 180KLOC of code & proof, producing 40KLOC of verified C & assembly
+  - Memory safe
+  - Functionally correct
+  - Side-channel resistant
+
+[EverCrypt-table]: ../../stuff/EverCrypt-table.png {width=900px}
+
+
+# AES-GCM: Authenticated Encryption
+<!-- for 90% of Secure Internet Traffic -->
+~Center
+[![EverCrypt-perf]{heigth=60%}](https://www.microsoft.com/en-us/research/blog/evercrypt-cryptographic-provider-offers-developers-greater-security-assurances/)
+~
+
+[EverCrypt-perf]: ../../stuff/EverCrypt-perf.png
+
+# The current F* team #
+
+- [**Microsoft Research, Inria Paris, Rosario, MIT, ...**]{color:DarkGreen;}
+  + many former members, interns, external contributors, ... you?
+  + [https://github.com/FStarLang/FStar](https://github.com/FStarLang/FStar)
+
+<!-- {font-size:xx-large} -->
+
+~Columns
+~~ Column {width 50%}
+- Danel Ahman
+- Benjamin Beurdouche
+- Karthikeyan Bhargavan
+- Barry Bond
+- Antoine Delignat-Lavaud
+- Victor Dumitrescu
+- Cédric Fournet
+- Chris Hawblitzel
+- Cătălin Hriţcu
+- Markulf Kohlweiss
+- Qunyan Mangus
+- Kenji Maillard
+~~
+~~ Column {width 50%}
+- Asher Manning
+- Guido Martínez
+- Zoe Paraskevopoulou
+- Clément Pit-Claudel
+- Jonathan Protzenko
+- Ramkumar Ramachandra
+- Tahina Ramananandro
+- Aseem Rastogi
+- **[Nikhil Swamy (benevolent dictator)]{color:DarkGreen}**
+- Christoph M. Wintersteiger
+- Santiago Zanella-Béguelin
+- Gustavo Varo
+~~
+~
+
+
+<!-- # The current F\* team # -->
+
+<!-- ~Center -->
+<!-- [**Microsoft Research (US, UK, India), Inria Paris, MIT, Rosario, ...**]{color:DarkGreen;} -->
+<!-- ~ -->
+
+<!--   |   |   -->
+<!-- --- | --- | -->
+<!-- [Danel Ahman]{color:DarkBlue}<br/>Benjamin Beurdouche<br/>Karthikeyan Bhargavan<br/>Barry Bond<br/>Antoine Delignat-Lavaud&nbsp;&nbsp;&nbsp;<br/>Victor Dumitrescu<br/>Cédric Fournet<br/>Chris Hawblitzel<br/>Cătălin Hriţcu<br/>Markulf Kohlweiss<br/>Qunyan Mangus<br/>[Kenji Maillard]{color:DarkBlue} | Asher Manning<br/>Guido Martínez<br/>Zoe Paraskevopoulou<br/>Clément Pit-Claudel<br/>Jonathan Protzenko<br/>Tahina Ramananandro<br/>Aseem Rastogi<br/>[**Nikhil Swamy (benevolent dictator)**]{color:DarkRed;}<br/>Christoph M. Wintersteiger<br/>Santiago Zanella-Béguelin<br/>Gustavo Varo |  -->
 
 
 <!------------------------------------------------------------------------------>
@@ -150,13 +226,11 @@ but only very weak logics
 
 ## The functional core of F\* ##
 
-* {.fragment} Recursive functions
-  ```
-  val factorial : nat -> nat
-  
-  let rec factorial n =
-    if n = 0 then 1 else n * (factorial (n - 1))
-  ```
+* Recursive functions
+
+```
+[INCLUDE=../../../code/pure-fun/Fact.fst:factorial]
+```
 
 * {.fragment} (Simple) inductive datatypes and pattern matching
   ```
@@ -165,7 +239,7 @@ but only very weak logics
     | Cons : hd:a -> tl:list a -> list a
 
   val map : ('a -> 'b) -> list 'a -> list 'b
-  
+
   let rec map f x =
     match x with
     | []     -> []
@@ -201,11 +275,12 @@ type nat = x:int{x >= 0}
 * {.fragment} Refinements eliminated by **subtyping**: ` nat <: int`
   ```
   let i : int = factorial 42
-  
+
   let f : x:nat{x > 0} -> int = factorial
   ```
 
-* {.fragment} Different kinds of extensional equality (`=`, `==`, `===`)
+<!-- Type theorists
+* {.fragment} Different kinds of extensional equality (`=`, `==`, `===`) -->
 
 
 ## Dependent types ##
@@ -220,6 +295,10 @@ type nat = x:int{x >= 0}
   ```
   val incr' : x:nat{odd x} -> y:nat{even y}
   ```
+
+* {.fragment} Exercise 0: Can you find other types for `incr`?
+
+<!-- Type theorists
 
 * {.fragment} (Parameterised and indexed) inductive datatypes; implicit arguments
   ```
@@ -254,18 +333,17 @@ type nat = x:int{x >= 0}
   val lookup : #a:Type -> #n:nat -> vec a n -> m:nat{m `less_than` n} -> a
   let rec lookup #a #n v m = ...
   ```
-
 * {.fragment} Or we could even just use lists + refinement types
   ```
   type list (a:Type) = | Nil : list a | Cons : hd:a -> tl:list a -> list a
 
   val length : #a:Type -> list a -> nat
   let rec length #a l = match l with | Nil -> 0 | Cons _ tl -> 1 + length tl
-    
+
   val lookup : #a:Type -> l:list a -> m:nat{m `less_than` (length l)} -> a
   let rec lookup #a l m = ...
   ```
-
+-->
 
 
 ## Total functions in F\* ##
@@ -326,13 +404,13 @@ type nat = x:int{x >= 0}
   - {.fragment} evaluator for lambda terms
     ```
     val eval : exp -> Dv exp
-    let rec eval e = 
+    let rec eval e =
       match e with
       | App (Lam x e1) e2 -> eval (subst x e2 e1)
       | App e1 e2         -> eval (App (eval e1) e2)
       | Lam x e1          -> Lam x (eval e1)
       | _                 -> e
-    
+
     let main () = eval (App (Lam 0 (App (Var 0) (Var 0)))
                             (Lam 0 (App (Var 0) (Var 0))))
     ```
@@ -341,8 +419,7 @@ type nat = x:int{x >= 0}
     ./Divergence.exe
     ```
     ~
-  - {.fragment} web servers
-  - {.fragment} ...
+  - {.fragment} web servers, ...
 
 <!------------------------------------------------------------------------------>
 
@@ -374,6 +451,8 @@ type nat = x:int{x >= 0}
 
 <!------------------------------------------------------------------------------>
 
+<!-- Type theorists
+
 ## F\* effect system encapsulates effectful code (`Tot` and `GTot`) ##
 
 * {.fragment} **[Ghost]{color:DarkBlue}** effect for code used only in specifications
@@ -400,6 +479,7 @@ type nat = x:int{x >= 0}
   ```
   let f (g:unit -> Tot nat) : GTot (n:nat{n = g ()}) = g ()
   ```
+-->
 
 <!-- Non-informative types T ::= unit | Type u | t -> Tot T | t -> GTot T -->
 
@@ -448,6 +528,7 @@ val factorial : nat -> Dv nat
         eval_closed (subst (sub_beta e2) e1')
     | Lam e1 -> Lam e1
   ```
+* {.fragment} Match exhaustiveness check also semantic (via SMT)
 * {.fragment}`Dv` is also just an abbreviation
 ```
 Dv t = Div t (requires True) (ensures (fun _ -> True))
@@ -459,11 +540,10 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
 
 * **Two classes of types**
   - [Value types (`t`):]{color:DarkBlue} `int`, `list int`, ...
-  - [Computation types (`C`):]{color:DarkRed} ` Tot t`, ` Dv t`, ` GTot t`<br/>
-
+  - [Computation types (`C`):]{color:DarkRed} `Tot t`, ` Dv t`<!-- , `GTot t` -->
 
 * {.fragment} **Dependent (effectful) function types** of the form: ` x:t -> C`
-  - argument can't have side-effects, so a value type<br/><br/>
+  - argument can't have side-effects, so a value type
 
 * {.fragment} **Two forms of refinement types**
   - [Refined value types:]{color:DarkBlue}
@@ -471,7 +551,7 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
   - [Refined computation types:]{color:DarkRed}
     - `Pure t pre post`
     - `Div t pre post`
-    - `Ghost t pre post`
+    <!-- - `Ghost t pre post` -->
     - these will get more interesting for more interesting effects
 
 <!------------------------------------------------------------------------------>
@@ -487,11 +567,12 @@ Dv t = Div t (requires True) (ensures (fun _ -> True))
 [INCLUDE=../../../code/pure-fun/AppendLength.fst:append_length]
 ```
 ~
-* {.fragment} Convenient syntactic sugar: **the `Lemma` effect**
+* {.fragment} Syntactic sugar
+<!-- : **the `Lemma` effect** -- CH: computation type -->
 ```
-Lemma (property) = Pure unit (requires True) (ensures (fun _ -> property))
+Lemma (post) = Pure unit (requires True) (ensures (fun _ -> post))
+Lemma (pre) (post) = Pure unit (requires pre) (ensures (fun _ -> post))
 ```
-* {.fragment} F\* also provides a `requires`-`ensures` variant of the `Lemma` effect
 
 <!------------------------------------------------------------------------------>
 
@@ -535,71 +616,35 @@ Lemma (property) = Pure unit (requires True) (ensures (fun _ -> property))
 - proof doesn't follow the structure of the program
 -->
 ```
-let snoc l h = l @ [h]
-
-val rev : #a:Type -> list a -> Tot (list a)
-
-let rec rev (#a:Type) l =
-  match l with
-  | []     -> []
-  | hd::tl -> snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev]
 ```
 ~Fragment
 ```
-val rev_snoc : #a:Type -> l:list a -> h:a ->
-                                        Lemma (rev (snoc l h) == h::rev l)
-
-
-let rec rev_snoc (#a:Type) l h =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_snoc tl h
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_snoc]
 ```
 ~
 ```
-val rev_involutive : #a:Type -> l:list a -> Lemma (rev (rev l) == l)
-
-let rec rev_involutive (#a:Type) l =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_involutive tl; rev_snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_involutive]
 ```
 
 ## Often lemmas are unavoidable ([but SMT can help]{color:DarkBlue}) ##
-<!-- need lemma for 3 reasons:
-- as before, this property is rather arbitrary
-- this property is "relational" (2 calls to reverse)
-- proof doesn't follow the structure of the program
--->
 ```
-let snoc l h = l @ [h]
-
-val rev : #a:Type -> list a -> Tot (list a)
-
-let rec rev (#a:Type) l =
-  match l with
-  | []     -> []
-  | hd::tl -> snoc (rev tl) hd
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev]
 ```
 
 ```
-val rev_snoc : #a:Type -> l:list a -> h:a -> 
-                                        Lemma (rev (snoc l h) == h::rev l)
-                                        [SMTPat (rev (snoc l h))]
-                                            
-let rec rev_snoc (#a:Type) l h =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_snoc tl h
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_snoc2]
 ```
 
 ```
-val rev_involutive : #a:Type -> l:list a -> Lemma (rev (rev l) == l)
+[INCLUDE=../../../code/pure-fun/Rev.fst:rev_involutive2]
+```
 
-let rec rev_involutive (#a:Type) l =
-  match l with
-  | []     -> ()
-  | hd::tl -> rev_involutive tl (*; rev_snoc (rev tl) hd*)
+<!------------------------------------------------------------------------------>
+
+## Exercise 1: Summing: 0 + 1 + 2 + 3 + ... ##
+```
+[INCLUDE=../../../ex/Sum.fst]
 ```
 
 <!------------------------------------------------------------------------------>
@@ -637,8 +682,6 @@ let rec progress #e #t h =
 ```
 ~
 
-* {.fragment} **Note:** match exhaustiveness check also semantic (via SMT)
-
 <!------------------------------------------------------------------------------>
 
 ## Functional core of F\* ## {#fcore}
@@ -663,35 +706,24 @@ let rec progress #e #t h =
 
 <!------------------------------------------------------------------------------>
 
-# Exercises #
-
-## Exercise 1: Summing: 0 + 1 + 2 + 3 + ... ##
-```
-[INCLUDE=../../../ex/Sum.fst]
-```
-
-## Exercise2: Simply typed stacks (the interface) ##
+## Abstract types: an interface ##
 `Stack.fsti`
 ```
-[INCLUDE=../../../ex/Stack.fsti:stack_types]
-```
-```
-[INCLUDE=../../../ex/Stack.fsti:stack_lemmas]
+[INCLUDE=../../../code/pure-fun/Stack.fsti]
 ```
 
-## Exercise 2: Simply typed stacks (the implementation) ##
-`Stack.fst`
-```
-[INCLUDE=../../../ex/Stack.fst]
-```
-
-## Exercise 2: Simply typed stacks (the client) ##
+## A client of this interface ##
 `StackClient.fst`
 ```
-[INCLUDE=../../../ex/StackClient.fst]
+[INCLUDE=../../../code/pure-fun/StackClient.fst]
 ```
 
-<!--
+## An implementation using lists of ints ##
+`Stack.fst`
+```
+[INCLUDE=../../../code/pure-fun/Stack.fst]
+```
+
 ## Clients cannot break abstraction ##
 `StackClientBad.fst`
 ```
@@ -699,26 +731,49 @@ let rec progress #e #t h =
 ```
 ~Fragment{.console}
 ```text
-fstar.exe StackClientBad.fst
+[hritcu@detained pure-fun]$ fstar.exe StackClientBad.fst
 ./StackClientBad.fst(6,9-6,11): (Error)
 Expected expression of type "Prims.list ((*?u13*) _ s0 s1)";
 got expression "s1" of type "Stack.stack"
 ```
 ~
--->
 
-## Exercise 3: Refinement-typed stacks ##
-`RefinedStack.fsti`
+## Using refinement types for stacks ##
+Writing both module in interface in the same file.
 ```
-[INCLUDE=../../../ex/RefinedStack.fsti]
+[INCLUDE=../../../code/pure-fun/RefinedStack.fst]
 ```
 
-* {.fragment} **Goal:** type a variant of `StackClient.fst` (now without `Some?.v`'s)
+## Client for RefinedStack ##
+
 ```
-let main () =
-    ...
-    let s3 = pop s2 (* <: stack *) in
-    assert (s3 == s1)
+[INCLUDE=../../../ex/RefinedStackClient.fst]
+```
+
+* {.fragment} Exercise 2: redesign `RefinedStack` interface so that this works
+
+## A simple solution (1) ##
+
+```
+[INCLUDE=../../../sol/RefinedStackLength.fst]
+```
+
+## A simple solution (2) ##
+
+```
+[INCLUDE=../../../sol/RefinedStackLengthClient.fst]
+```
+
+## A more interesting solution (1) ##
+
+```
+[INCLUDE=../../../sol/RefinedStack.fst]
+```
+
+## A more interesting solution (2) ##
+
+```
+[INCLUDE=../../../sol/RefinedStackClient.fst]
 ```
 
 <!------------------------------------------------------------------------------>
@@ -729,6 +784,6 @@ let main () =
 
 * **Tomorrow: Verifying Stateful Programs in F\***
 
-* Sunday: Monotonic State in F\*
+* Tomorrow: Monotonic State in F\*
 
-* Sunday: F\*'s Extensible Effect System and Metaprogramming in F\*
+<!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->

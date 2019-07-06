@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : Program Verification with F*
-Author        : Danel Ahman
+Author        : Catalin Hritcu, Danel Ahman
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -21,18 +21,18 @@ Package       : xypic
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
+**[Catalin Hritcu, Inria Paris](https://prosecco.gforge.inria.fr/personal/hritcu)**
 
-[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
+[Summer School on Verification Technology, Systems, and Applications (VTSA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
-Ohrid, Macedonia, 11 August, 2018
+University of Luxembourg, 1-2 July 2019
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
 
 <!------------------------------------------------------------------------------>
 
-## Recap of yesterday: Functional core of F\* ## {#fcore}
+## Recap: Functional core of F\* ## {#fcore}
 
 * **[Variant of dependent type theory]{color:DarkBlue}**
   - $\lambda$, $\Pi$, inductives, matches, universe polymorphism
@@ -60,9 +60,9 @@ Ohrid, Macedonia, 11 August, 2018
 
 * **Today: Verifying Stateful Programs in F\***
 
-* Tomorrow: Monotonic State in F\*
+* Today: Monotonic State in F\*
 
-* Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\*
+<!-- * Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\* -->
 
 <!------------------------------------------------------------------------------>
 
@@ -72,15 +72,15 @@ Ohrid, Macedonia, 11 August, 2018
 * The `St` effect---programming with [**garbage-collected references**]{color:DarkBlue}
   ```
   val incr : r:ref int -> St unit
-  
+
   let incr r = r := !r + 1
   ```
 
 * {.fragment} Hoare logic-style **[preconditions]{color:DarkGreen}** and **[postconditions]{color:DarkRed}** with `ST`
   ```
-  val incr : r:ref int -> 
-    ST unit (requires (fun h0 -> True))                        
-            (ensures  (fun h0 _ h2 -> modifies !{r} h0 h2 /\ 
+  val incr : r:ref int ->
+    ST unit (requires (fun h0 -> True))
+            (ensures  (fun h0 _ h2 -> modifies !{r} h0 h2 /\
                                       sel h2 r == sel h0 r + 1))
   ```
   - {.fragment} **[precondition]{color:DarkGreen}** (requires) is a **[predicate on initial states]{color:DarkGreen}**
@@ -93,8 +93,7 @@ Ohrid, Macedonia, 11 August, 2018
 * {.fragment} `St` is again just an abbreviation for `ST` with trivial pre-postconditions
 
 * {.fragment} **Sub-effecting:** ` Pure <: ST ` and in fact also ` Div <: ST `
-
-* {.fragment} As such, think of `ST` as having a [**partial correctness**]{color:DarkBlue} reading
+  - As such, think of `ST` as having a [**partial correctness**]{color:DarkBlue} reading
 
 <!------------------------------------------------------------------------------>
 
@@ -154,7 +153,7 @@ let incr r = r := !r + 1
 ```
 G |- e1 : ST t1 (requires (fun h0 -> pre))
                 (ensures  (fun h0 x1 h1 -> post))
-                  
+
 G, x1:t1 |- e2 : ST t2 (requires (fun h1 -> exists h0. post))
                        (ensures  (fun h1 x2 h2 -> post'))
 --------------------------------------------------------------------------
@@ -193,19 +192,31 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 ~
 <!--* {.fragment} **Note:** This variant is correct even when `r1` and `r2` are aliased-->
 
+<!-- TODO: WARNING this proof only works for the unaliased case,
+           even if the statement is also true for the aliased case -->
+
 <!------------------------------------------------------------------------------>
 
 ## Integer reference swapping (the funny way) ##
 
 ```
-[INCLUDE=../../../code/state/SwapIntRefsST.fst:swap_add_sub]
+[INCLUDE=../../../ex/SwapIntRefsST.fst:swap_add_sub]
 ```
 
 * Correctness of this variant relies on `r1` and `r2` not being aliased
 
 * ... and on `int` being unbounded (mathematical) integers<br/><br/>
 
-* {.fragment} **Exercise:** Sketch a hand proof that this code is correct
+* {.fragment} **Exercise 0:** Sketch a hand proof that this code is correct
+
+## Solution ##
+
+```
+[INCLUDE=../../../sol/SwapIntRefsST.fst:swap_add_sub]
+```
+
+<!-- TODO: This is un-necessarily tricky. Had to tell them how subeffecting works for St,
+           and it aint simple. Alternative would be to move the pre as a premise of post. -->
 
 <!-- ~Block {.console} -->
 <!-- ```text -->
@@ -222,8 +233,7 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 <!-- [INCLUDE=../../../ex/FactorialST.fst:fact] -->
 <!-- ``` -->
 
-<!-- This is exercise is flaky when run with --verify_all
-     https://github.com/FStarLang/FStar/issues/1281 -->
+<!-- This is exercise used to be flaky because of the non-linear arithmetic -->
 
 <!-- DONE: removed! nothing of value was lost
         Another confusing thing about this example is that it
@@ -258,7 +268,7 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 ## Stateful sum: 1 + 2 + 3 + ... ##
 ~Fragment
 ```
-[INCLUDE=../../../ex/SumST.fst:sum_rec]
+[INCLUDE=../../../ex/SumST.fst:sum_tot]
 ```
 ~
 ```
@@ -267,6 +277,8 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 
 * {.fragment} **Exercise:** Strengthen the spec of `sum_st'` to remove `admit` in `sum_st`
 
+<!-- TODO: This exercise's solution is even syntactically similar to previous example.
+           Doesn't require much thinking -->
 
 
 <!------------------------------------------------------------------------------>
@@ -286,20 +298,11 @@ G |- let x1 = e1 in e2 : ST t2 (requires (fun h0 -> pre))
 
 <!------------------------------------------------------------------------------>
 
-## Exercise: Stateful Factorial ##
-`FactorialST.fst`
-```
-[INCLUDE=../../../ex/FactorialST.fst:factorial_ex]
-```
-
-
-<!------------------------------------------------------------------------------>
-
 ## Stateful invariants (mutable non-empty lists) ##
 
 ```
 module NList
-  abstract type nlist = xs:list int{Cons? xs}
+  abstract type nlist = xs:(list int){Cons? xs}
 
   let create (x:int) : St (ref nlist) = alloc #nlist [x]
 
@@ -319,13 +322,17 @@ module NListClient
     let r = create 1 in
     add 2 r;
     complex_procedure r;
-    let l = read r in 
+    let l = read r in
     assert ([2,1] `is_suffix_of` l)  (* fails, even though we know c_p can
-                                        only use `add` and `read` on r *)  
+                                        only use `add` and `read` on r *)
 ```
 ~
 
-* {.fragment} Tomorrow we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+* {.fragment} Later we'll see how [**monotonicity**]{color:DarkBlue} helps us prove such assertions
+
+<!-- TODO: Unnecessary discrepancies between this and monotonic log example in next lecture:
+     - here we take `suffix` as the preorder, while there we take subset
+-->
 
 <!------------------------------------------------------------------------------>
 
@@ -348,7 +355,7 @@ module NListClient
 
 * **[`ST` effect for pre- and postcondition based (intrinsic) reasoning]{color:DarkBlue}**
   ```
-  ST unit (requires (fun h0 -> True))                        
+  ST unit (requires (fun h0 -> True))
           (ensures  (fun h0 _ h2 -> modifies !{r} h0 h2 /\ sel h2 r == n))
   ```
 
@@ -358,10 +365,14 @@ module NListClient
 
 <!------------------------------------------------------------------------------>
 
+<!-- TODO: Not sure whether to keep this or not. It's all too low level, and it will change.
+           - Could also look at what Nik has, but it's probably complicated too.
+           - Could also just go through very quickly. *)
+
 ## Low*: programming and verifying low-level C code ##
 
 * **Low\*:** a subset of F\* that
-  - enjoys compilation to C through its companion compiler KreMLin
+  - enjoys compilation to C through the KreMLin tool
   - provides F\* libraries that model a curated set of C features:
     + C memory model
     + stack- and heap-allocated arrays
@@ -390,7 +401,7 @@ module NListClient
 * {.fragment} `Stack` effect for stack-allocating programs (intuitively, `ST` on `HS`'s `mem`)
   ```
   module HyperStack.ST
-  
+
     effect Stack (a:Type) (requires pre) (ensures post)
       = ST a (requires pre)
              (ensures  (fun m0 x m1 -> post m0 x m1 /\ equal_domains m0 m1))
@@ -398,14 +409,15 @@ module NListClient
 ~Fragment
   ```
   let equal_domains (m0 m1: mem) =
-    get_tip m0 == get_tip m1 /\         (* leaves the C call stack intact *)
+    get_tip m0 == get_tip m1 /\           (* leaves the C call stack intact *)
     Set.equal (Map.domain (get_hmap m0))
               (Map.domain (get_hmap m1)) /\
-                                (* does not (de)allocate any heap regions *)
-    same_refs_in_all_regions m0 m1
-                                 (* does not allocate in existing regions *)
+                                  (* does not (de)allocate any heap regions *)
+    same_refs_in_all_regions m0 m1 (* does not allocate in existing regions *)
   ```
 ~
+
+<!-- TODO: This last one is quite gory -->
 
 * {.fragment} Additional effects for [**heap-allocating**]{color:DarkBlue} and [**arbitrary**]{color:DarkRed} low-level code
 
@@ -413,31 +425,33 @@ module NListClient
 
 ## Low*: a small example ##
 
+<!-- Would be nice to show something with a specification -->
+
 ```
 let f (): Stack UInt64.t (requires (fun _ -> True))
                          (ensures  (fun _ _ _ -> True))
-                         
+
   = push_frame ();                         (* pushing a new stack frame *)
-    
+
     let b = LowStar.Buffer.alloca 1UL 64ul in
     assert (b.(42ul) = 1UL);      (* high-level reasoning in F*'s logic *)
 
     b.(42ul) <- b.(42ul) +^ 42UL;
     let r = b.(42ul) in
-      
+
     pop_frame ();           (* popping the stack frame we pushed above, *)
                             (* so as to ensure that equal_domains holds *)
-    assert (r = 43UL);                    
+    assert (r = 43UL);
     r
 ```
 ```
 uint64_t f()
 {
   uint64_t b[64U];
-    
+
   for (uint32_t _i = 0U; _i < (uint32_t)64U; ++_i)
     b[_i] = (uint64_t)1U;
-      
+
   b[42U] = b[42U] + (uint64_t)42U;
   uint64_t r = b[42U];
   return r;
@@ -452,6 +466,4 @@ uint64_t f()
 
 * Today: Verifying Stateful Programs in F\*
 
-* **Tomorrow: Monotonic State in F\***
-
-* **Tomorrow: F\*'s Extensible Effect System and Metaprogramming in F\***
+* **Today: Monotonic State in F\***

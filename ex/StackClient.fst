@@ -2,7 +2,7 @@ module StackClient
 
 open Stack
 
-[@expect_failure]      (* remove this attribute once you have completed Stack.fst *)
+[@expect_failure] (* remove attribute once you have completed Stack.fst *)
 let main() =
 
   let s0 = empty (* <: stack *) in

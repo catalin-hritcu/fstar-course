@@ -2,93 +2,99 @@
 <head>
 <title>Program verification with F*</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link REL=STYLESHEET TYPE="text/css" href="danel.css">
 </head>
 <body>
 <h1>Program verification with F*</h1>
 
-<p>Course at <a href="https://sites.google.com/view/2018eutypesschool/home" target="_blank">2018 EUTypes Summer School on
-Types for Programming and Verification</a> in <a href="https://goo.gl/maps/TULXTWGrNPU2" target="_blank">Ohrid, Macedonia</a> on 8-12 August, 2018</p>
+<p>Course at <a href="http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/" target="_blank">Summer School on Verification Technology, Systems, and Applications, VTSA 2019</a>
+at University of Luxembourg on 1-2 July 2019</p>
 
-<p><i>(Based on <a href="https://fstar-lang.org/#talks" target="_blank">past courses</a> by C&#259;t&#259;lin Hri&#355;cu and various other members of the F* team)</i></p>
+<p><b>Teaching team</b>: <a href="http://prosecco.gforge.inria.fr/personal/hritcu/">Cătălin Hriţcu</a> and Antoine Van Muylder</p>
+
+<p><b>Other contributors</b>: <a href="https://danel.ahman.ee/">Danel Ahman</a> and various other members of the F* team</p>
 
 <h2 id="schedule">Schedule</h2>
 
-<p>Friday, 10 August, 2018:</p>
+<p>Monday, 1 July 2019:</p>
 <ul>
-<li>10:30--11:30 <b>A Gentle Introduction to F*: Verifying Purely Functional Programs</b> (<a href="slides/out/pure-fun/pure-fun.html" target="_blank">slides</a>)</li>
+<li>9:00--12:30<b> A Gentle Introduction to F*: Verifying Purely Functional Programs</b> (<a href="slides/out/pure-fun/pure-fun.html" target="_blank">slides</a>)</li>
 <ul>
 <li style="margin-top:5px"><b>Code:</b></li>
 <ul>
-<li><a href="code/pure-fun/Ackermann.fst" target="_blank">Ackermann.fst</a> (Ackermann function and decreases metrics)</li>
-<li><a href="code/pure-fun/Rev.fst" target="_blank">Rev.fst</a> (list reversal)</li>
-<li style="margin-bottom:5px"><a href="code/pure-fun/Divergence.fst" target="_blank">Divergence.fst</a> (potentially divergent evaluator)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/pure-fun/Fact.fst" target="_blank">Fact.fst</a> (factorial)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/pure-fun/Ackermann.fst" target="_blank">Ackermann.fst</a> (Ackermann function and decreases metrics)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/pure-fun/Rev.fst" target="_blank">Rev.fst</a> (list reversal)</li>
+<li style="margin-bottom:5px"><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/pure-fun/Divergence.fst" target="_blank">Divergence.fst</a> (potentially divergent evaluator)</li>
 </ul>
-<li><b>Exercise 1:</b> Summing 1 + 2 + 3 + ... (<a href="ex/Sum.fst" target="_blank">Sum.fst</a>; <a href="sol/Sum.fst" target="_blank">solution</a>)</li>
-<li><b>Exercise 2:</b> Simply typed stacks (<a href="ex/Stack.fsti" target="_blank">Stack.fsti</a>, <a href="ex/Stack.fst" target="_blank">Stack.fst</a>, <a href="ex/StackClient.fst" target="_blank">StackClient.fst</a>; <a href="sol/Stack.fsti" target="_blank">solution 1</a>, <a href="sol/Stack.fst" target="_blank">solution 2</a>, <a href="sol/StackClient.fst" target="_blank">solution 3</a>)</li>
-<li style="margin-bottom:20px"><b>Exercise 3:</b> Refined stacks (<a href="ex/RefinedStack.fsti" target="_blank">RefinedStack.fsti</a>; <a href="sol/RefinedStack.fsti" target="_blank">solution 1</a>, <a href="sol/RefinedStack.fst" target="_blank">solution 2</a>, <a href="sol/RefinedStackClient.fst" target="_blank">solution 3</a>)</li>
+<li><b>Exercise 0:</b> Different types for incr (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/Incr.fst" target="_blank">Incr.fst</a>; solution: <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/Incr.fst" target="_blank">Incr.fst</a>)</li>
+<li><b>Exercise 1:</b> Summing 1 + 2 + 3 + ... (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/Sum.fst" target="_blank">Sum.fst</a>; solution: <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/Sum.fst" target="_blank">Sum.fst</a>)</li>
+<li style="margin-bottom:20px"><b>Exercise 2:</b> Refined stacks (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/RefinedStack.fst" target="_blank">RefinedStack.fst</a>,
+<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/RefinedStackClient.fst" target="_blank">RefinedStackClient.fst</a>;
+solution: <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/RefinedStack.fst" target="_blank">RefinedStack.fst</a>, <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/RefinedStackClient.fst" target="_blank">RefinedStackClient.fst</a>)</li>
 </ul>
 </ul>
 
-<p>Saturday, 11 August, 2018:</p>
+<p>Tuesday, 2 July 2019:</p>
 <ul>
-<li>16:30--17:30 <b>Verifying Stateful Programs with F*</b> (<a href="slides/out/state/state.html" target="_blank">slides</a>)</li>
+<li>14:00--15:30 <b>Verifying Stateful Programs with F*</b> (<a href="slides/out/state/state.html" target="_blank">slides</a>)</li>
 <ul>
-<li style="margin-top:5px">F*'s ML-style garbage-collected memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Heap.fst" target="_blank">FStar.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a></li>
-<li>F*'s low-level memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.fst" target="_blank">FStar.HyperStack.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.ST.fst" target="_blank">FStar.HyperStack.ST.fst</a></li>
+<!-- <li style="margin-top:5px">F*'s ML-style garbage-collected memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Heap.fst" target="_blank">FStar.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a></li> -->
+<!-- <li>F*'s low-level memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.fst" target="_blank">FStar.HyperStack.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.ST.fst" target="_blank">FStar.HyperStack.ST.fst</a></li> -->
 <li><b>Code:</b></li>
 <ul>
-<li><a href="code/state/IncrST.fst" target="_blank">IncrST.fst</a>, <a href="code/state/Incr2ST.fst" target="_blank">Incr2ST.fst</a> (increment function)</li>
-<li><a href="code/state/SwapRefsST.fst" target="_blank">SwapRefsST.fst</a> (reference swapping)</li>
-<li><a href="code/state/CountST.fst" target="_blank">CountST.fst</a> (stateful counting)
-<li><a href="code/state/FibonacciST.fst" target="_blank">FibonacciST.fst</a> (stateful fibonacci)</li>
-<li style="margin-bottom:5px"><a href="code/state/BufferAlloc.fst" target="_blank">BufferAlloc.fst</a>, <a href="code/state/BufferAlloc.c" target="_blank">BufferAlloc.c</a> (low-level code)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/IncrST.fst" target="_blank">IncrST.fst</a>, <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/Incr2ST.fst" target="_blank">Incr2ST.fst</a> (increment function)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/SwapRefsST.fst" target="_blank">SwapRefsST.fst</a> (reference swapping)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/CountST.fst" target="_blank">CountST.fst</a> (stateful counting)
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/FibonacciST.fst" target="_blank">FibonacciST.fst</a> (stateful fibonacci)</li>
+<li style="margin-bottom:5px"><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/BufferAlloc.fst" target="_blank">BufferAlloc.fst</a>, <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/BufferAlloc.c" target="_blank">BufferAlloc.c</a> (low-level code)</li>
 </ul>
-<li><b>Exercise 1:</b> Sketch a hand proof of the correctness of integer reference swapping (<a href="code/state/SwapIntRefsST.fst" target="_blank">SwapIntRefsST.fst</a>)</li>
-<li><b>Exercise 2:</b> Stateful summing 1 + 2 + 3 + ... (<a href="ex/SumST.fst" target="_blank">SumST.fst</a>; <a href="sol/SumST.fst" target="_blank">solution</a>)</li>
-<li><b>Exercise 3:</b> Stateful factorial (<a href="ex/FactorialST.fst" target="_blank">FactorialST.fst</a>; <a href="sol/FactorialST.fst" target="_blank">solution</a>)</li>
-<li style="margin-bottom:10px"><b>Exercise 4:</b> Experiment with the low-level memory model and extraction to C (see <a href="code/state/BufferAlloc.fst" target="_blank">BufferAlloc.fst</a>)</li>
-</ul>
-<li style="margin-bottom:20px">17:30--18:30 Exercise Class</li>
+<li><b>Exercise 1:</b> Sketch a hand proof of the correctness of integer reference swapping (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/SwapIntRefsST.fst" target="_blank">SwapIntRefsST.fst</a>)</li>
+<li><b>Exercise 2:</b> Stateful summing 1 + 2 + 3 + ... (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/SumST.fst" target="_blank">SumST.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/SumST.fst" target="_blank">solution</a>)</li>
+<!-- <li><b>Exercise 3:</b> Stateful factorial (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/FactorialST.fst" target="_blank">FactorialST.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/FactorialST.fst" target="_blank">solution</a>)</li> -->
+<!-- <li style="margin-bottom:10px"><b>Exercise 4:</b> Experiment with the low-level memory model and extraction to C (see <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/state/BufferAlloc.fst" target="_blank">BufferAlloc.fst</a>)</li> -->
 </ul>
 
-<p>Sunday, 12 August, 2018:</p>
+<li>16:00--17:30 <b>Monotonic State in F*</b> (<a href="slides/out/monotonic/monotonic.html" target="_blank">slides</a>)</li>
 <ul>
-<li>09:00--10:00 <b>Monotonic State in F*</b> (<a href="slides/out/monotonic/monotonic.html" target="_blank">slides</a>)</li>
-<ul>
-<li style="margin-top:5px">F*'s witnessed modality: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fsti" target="_blank">FStar.Monotonic.Witnessed.fsti</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fst" target="_blank">FStar.Monotonic.Witnessed.fst</a></li>
-<li>F*'s monotonic ML-style memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Heap.fst" target="_blank">FStar.Monotonic.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Ref.fst" target="_blank">FStar.Ref.fst</a></li>
-<li>F*'s monotonic low-level memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.HyperStack.fst" target="_blank">FStar.Monotonic.HyperStack.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.ST.fst" target="_blank">FStar.HyperStack.ST.fst</a></li>
+<!-- <li style="margin-top:5px">F*'s witnessed modality: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fsti" target="_blank">FStar.Monotonic.Witnessed.fsti</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Witnessed.fst" target="_blank">FStar.Monotonic.Witnessed.fst</a></li> -->
+<!-- <li>F*'s monotonic ML-style memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.Heap.fst" target="_blank">FStar.Monotonic.Heap.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.ST.fst" target="_blank">FStar.ST.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Ref.fst" target="_blank">FStar.Ref.fst</a></li> -->
+<!-- <li>F*'s monotonic low-level memory model: <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.Monotonic.HyperStack.fst" target="_blank">FStar.Monotonic.HyperStack.fst</a>, <a href="https://github.com/FStarLang/FStar/blob/master/ulib/FStar.HyperStack.ST.fst" target="_blank">FStar.HyperStack.ST.fst</a></li> -->
 <li><b>Code:</b></li>
 <ul>
-<li><a href="code/monotonic/CounterMST.fst" target="_blank">CounterMST.fst</a> (monotonic counters)</li>
-<li><a href="code/monotonic/SimpleLogMST.fst" target="_blank">SimpleLogMST.fst</a> (monotonic logs)</li>
-<li><a href="code/monotonic/InitFreezeMST.fst" target="_blank">InitFreezeMST.fst</a> (initializable and freezable references)</li>
-<li style="margin-bottom:5px"><a href="code/monotonic/Snapshots.fst" target="_blank">Snapshots.fst</a> (escaping the preorder with snapshots)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/monotonic/CounterMST.fst" target="_blank">CounterMST.fst</a> (monotonic counters)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/monotonic/SimpleLogMST.fst" target="_blank">SimpleLogMST.fst</a> (monotonic logs)</li>
+<li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/monotonic/InitFreezeMST.fst" target="_blank">InitFreezeMST.fst</a> (initializable and freezable references)</li>
+<li style="margin-bottom:5px"><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/monotonic/Snapshots.fst" target="_blank">Snapshots.fst</a> (escaping the preorder with snapshots)</li>
 </ul>
-<li><b>Exercise 1:</b> Typing of initializable and freezable references read and freeze actions (<a href="ex/InitFreezeMST.fst" target="_blank">InitFreezeMST.fst</a>; <a href="sol/InitFreezeMST.fst" target="_blank">solution</a>)</li>
-<li style="margin-bottom:10px; width:700px"><b>Exercise 2:</b> Define a notion of initializable and freezable arrays (see the <a href="slides/out/monotonic/monotonic.html#/sec-exercise--initializable-and-freezable-arrays" target="_blank">lecture slides</a> for details; <a href="sol/InitFreezeArrayMST.fst" target="_blank">solution</a>)</li>
+<li><b>Exercise 1:</b> Typing of initializable and freezable references read and freeze actions (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/InitFreezeMST.fst" target="_blank">InitFreezeMST.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/InitFreezeMST.fst" target="_blank">solution</a>)</li>
+<!-- <li style="margin-bottom:10px; width:700px"><b>Exercise 2:</b> Define a notion of initializable and freezable arrays (see the <a href="slides/out/monotonic/monotonic.html#/sec-exercise--initializable-and-freezable-arrays" target="_blank">lecture slides</a> for details; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/InitFreezeArrayMST.fst" target="_blank">solution</a>)</li> -->
 </ul>
-<li>12:00--13:00 F*'s <b>Extensible Effect System and Metaprogramming in F*</b> (<a href="slides/out/effects/effects.html" target="_blank">slides</a>)</li>
-<ul>
-<li style="margin-top:5px">F*'s extensible effect system; Dijkstra monads (for free) (<a href="https://www.fstar-lang.org/papers/mumon/" target="_blank">paper1</a>, <a href="https://www.fstar-lang.org/papers/dm4free/" target="_blank">paper2</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/dm4free" target="_blank">examples</a>)</li>
-<li>F*'s tactics and metaprogramming framework (<a href="https://arxiv.org/abs/1803.06547" target="_blank">paper</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/tactics" target="_blank">examples</a>)</li>
-<li><b>Code:</b></li>
-<ul>
-<li><a href="code/effects/IncrReify.fst" target="_blank">IncrReify.fst</a> (verifying stateful increment function using monadic reification)</li>
-<li><a href="code/effects/NonInterference.fst" target="_blank">NonInterference.fst</a> (proving noninterference using monadic reification)</li>
-<li><a href="code/effects/Logic.fst" target="_blank">Logic.fst</a> (discharging verification conditions: simple tautology)</li>
-<li><a href="code/effects/CanonCommSemiring.fst" target="_blank">CanonCommSemiring.fst</a> (massaging verification conditions: canonicaliser for commutative semirings)</li>
-<li><a href="code/effects/Printers.fst" target="_blank">Printers.fst</a> (synthesising F* terms: printer for inductive types)</li>
-<li style="margin-bottom:5px"><a href="code/effects/Typeclasses.fst" target="_blank">Typeclasses.fst</a> (metaprogramming typeclasses; needs a more recent version of F* than the v0.9.6.0 release)</li>
+
+<!-- <li>16:00--17:30 <b>Extensible Effect System and Metaprogramming in F*</b> (<a href="slides/out/effects/effects.html" target="_blank">slides</a>) -->
+<!-- <ul> -->
+<!-- <li style="margin-top:5px">F*'s extensible effect system; Dijkstra monads (for free) (<a href="https://www.fstar-lang.org/papers/mumon/" target="_blank">paper1</a>, <a href="https://www.fstar-lang.org/papers/dm4free/" target="_blank">paper2</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/dm4free" target="_blank">examples</a>)</li> -->
+<!-- <li>F*'s tactics and metaprogramming framework (<a href="https://arxiv.org/abs/1803.06547" target="_blank">paper</a>, <a href="https://github.com/FStarLang/FStar/tree/master/examples/tactics" target="_blank">examples</a>)</li> -->
+<!-- <li><b>Code:</b></li> -->
+<!-- <ul> -->
+<!-- <li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/IncrReify.fst" target="_blank">IncrReify.fst</a> (verifying stateful increment function using monadic reification)</li> -->
+<!-- <li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/NonInterference.fst" target="_blank">NonInterference.fst</a> (proving noninterference using monadic reification)</li> -->
+<!-- <li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/Logic.fst" target="_blank">Logic.fst</a> (discharging verification conditions: simple tautology)</li> -->
+<!-- <li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/CanonCommSemiring.fst" target="_blank">CanonCommSemiring.fst</a> (massaging verification conditions: canonicaliser for commutative semirings)</li> -->
+<!-- <li><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/Printers.fst" target="_blank">Printers.fst</a> (synthesising F* terms: printer for inductive types)</li> -->
+<!-- <li style="margin-bottom:5px"><a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/Typeclasses.fst" target="_blank">Typeclasses.fst</a> (metaprogramming typeclasses; needs a more recent version of F* than the v0.9.6.0 release)</li> -->
+<!-- </ul> -->
+<!-- <li style="width:700px"><b>Exercise 1:</b> Implement stateful summing (similarly to <a href="slides/out/state/state.html#/sec-stateful-sum--1-2-3-" target="_blank">Lecture 2</a>, but with a weak type) using a global state (similarly to <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/IncrReify.fst" target="_blank">IncrReify.fst</a>) and use monadic reification (see <a href="slides/out/effects/effects.html#/sec-verifying-effectful-programs" target="_blank">Lecture 4</a>) to prove that this stateful summing is equivalent to the purely functional code (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/SumReify.fst" target="_blank">SumReify.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/SumReify.fst" target="_blank">solution</a>)</li> -->
+<!-- <li style="width:700px"><b>Exercise 2:</b> Implement stateful Fibonacci (similarly to <a href="slides/out/state/state.html#/sec-stateful-fibonacci--1-1-2-3-5-8-" target="_blank">Lecture 2</a>, but with a weak type) using a 2-location global state (as used in <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/NonInterference.fst" target="_blank">NonInterference.fst</a>) and use monadic reification (see <a href="slides/out/effects/effects.html#/sec-verifying-effectful-programs" target="_blank">Lecture 4</a>) to prove that this stateful Fibonacci is equivalent to the purely functional code (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/FibonacciReify.fst" target="_blank">FibonacciReify.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/FibonacciReify.fst" target="_blank">solution</a>)</li> -->
+<!-- <li style="width:700px"><b>Exercise 3:</b> Define the READER effect, show that it is a sub-effect of the STATE effect defined in <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/SumReify.fst" target="_blank">SumReify.fst</a>, and demonstrate that the READER effect you defined is correct wrt STATE (<a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/ex/Reader.fst" target="_blank">Reader.fst</a>; <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/sol/Reader.fst" target="_blank">solution</a>)</li> -->
+<!-- <li style="margin-bottom:10px; width:700px"><b>Exercise 4:</b> Try out F*'s metaprogramming and tactics framework, starting with <a href="https://github.com/catalin-hritcu/fstar-course/blob/vtsa2019/code/effects/Logic.fst" target="_blank">Logic.fst</a>, and try to extend it to prove more interesting logical properties</li> -->
+<!-- </ul></li> -->
+
 </ul>
-<li style="width:700px"><b>Exercise 1:</b> Implement stateful summing (similarly to <a href="slides/out/state/state.html#/sec-stateful-sum--1-2-3-" target="_blank">Lecture 2</a>, but with a weak type) using a global state (similarly to <a href="code/effects/IncrReify.fst" target="_blank">IncrReify.fst</a>) and use monadic reification (see <a href="slides/out/effects/effects.html#/sec-verifying-effectful-programs" target="_blank">Lecture 4</a>) to prove that this stateful summing is equivalent to the purely functional code (<a href="ex/SumReify.fst" target="_blank">SumReify.fst</a>; <a href="sol/SumReify.fst" target="_blank">solution</a>)</li>
-<li style="width:700px"><b>Exercise 2:</b> Implement stateful Fibonacci (similarly to <a href="slides/out/state/state.html#/sec-stateful-fibonacci--1-1-2-3-5-8-" target="_blank">Lecture 2</a>, but with a weak type) using a 2-location global state (as used in <a href="code/effects/NonInterference.fst" target="_blank">NonInterference.fst</a>) and use monadic reification (see <a href="slides/out/effects/effects.html#/sec-verifying-effectful-programs" target="_blank">Lecture 4</a>) to prove that this stateful Fibonacci is equivalent to the purely functional code (<a href="ex/FibonacciReify.fst" target="_blank">FibonacciReify.fst</a>; <a href="sol/FibonacciReify.fst" target="_blank">solution</a>)</li>
-<li style="width:700px"><b>Exercise 3:</b> Define the READER effect, show that it is a sub-effect of the STATE effect defined in <a href="ex/SumReify.fst" target="_blank">SumReify.fst</a>, and demonstrate that the READER effect you defined is correct wrt STATE (<a href="ex/Reader.fst" target="_blank">Reader.fst</a>; <a href="sol/Reader.fst" target="_blank">solution</a>)</li>
-<li style="margin-bottom:10px; width:700px"><b>Exercise 4:</b> Try out F*'s metaprogramming and tactics framework, starting with <a href="code/effects/Logic.fst" target="_blank">Logic.fst</a>, and try to extend it to prove more interesting logical properties</li>
 </ul>
-<li style="margin-bottom:20px">15:00--16:00 Exercise Class</li>
-</ul>
-</ul>
+
+<h2 id="code">Code and exercises from slides</h2>
+<a href="https://github.com/catalin-hritcu/fstar-course/tree/vtsa2019">https://github.com/catalin-hritcu/fstar-course/tree/vtsa2019</a>
 
 <h2 id="setup">Setup instructions</h2>
 
@@ -101,7 +107,7 @@ We also have an
 </p>
 
 <p>
-For people who want to get F* (v0.9.6.0, most recent release)
+For people who want to get F* (v0.9.7.0-alpha1, most recent release)
 installed on their machine there are 2 easy options:
 <ol>
 <li> Using the <a href="https://fstar-lang.org/#download">
@@ -109,7 +115,8 @@ binary release</a>
 (<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#binary-releases">documentation on this</a>)
 </li>
 <li>or Using the <a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#opam-package">OPAM package</a>
-(especially for people already using OCaml; note that you still need to get Z3 separately)<br/>
+(especially for people already using OCaml; note that
+<a href="https://github.com/FStarLang/binaries/tree/master/z3-tested">in this case you still need to get Z3 separately</a>)<br/>
 </li>
 </ol>
 </p>
@@ -120,10 +127,9 @@ In addition, if you're familiar with emacs, we recommend getting
 </p>
 
 <p style="margin-bottom:20px; width:800px">
-For people who are more motivated, there are even more ways including
-building F* from sources (see
-<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#building-f-from-sources">documentation on this</a>).<br/><br/>
-<sup>&dagger;</sup><i><b>Note:</b> Recent versions of F* use the [@expect_failure] attribute to denote the expectation of failing typechecking, while the v0.9.6.0 release uses the [@fail] attribute for the same purpose. Change this according to the version you use, e.g., this concerns <a href="code/pure-fun/Ackermann.fst" target="_blank">Ackermann.fst</a>.
+For people who are more motivated, there are even more ways,
+including building F* from sources (see
+<a href="https://github.com/FStarLang/FStar/blob/master/INSTALL.md#building-f-from-sources">documentation on this</a>).
 </p>
 
 <h2 style="margin-bottom:-5px">More references</h2>

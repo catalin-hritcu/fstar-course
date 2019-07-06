@@ -8,6 +8,7 @@ all:
 	$(FSTAR) RefinedStack.fsti
 	$(FSTAR) RefinedStack.fst
 	$(FSTAR) RefinedStackClient.fst
+	$(FSTAR) SwapIntRefsST.fst
 	$(FSTAR) SumST.fst
 	$(FSTAR) FactorialST.fst
 	$(FSTAR) InitFreezeMST.fst

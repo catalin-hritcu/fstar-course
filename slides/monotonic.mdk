@@ -1,6 +1,6 @@
 [INCLUDE=presentation]
 Title         : Monotonic State in F*
-Author        : Danel Ahman
+Author        : Danel Ahman, Catalin Hritcu, Aseem Rastogi
 Affiliation   : Inria Paris
 Reveal Url    : ../reveal.js
 Reveal Theme  : white
@@ -21,11 +21,11 @@ Package       : xypic
 ~Center
 [![fstar-logo]](https://www.fstar-lang.org)
 
-**[Danel Ahman, Inria Paris](https://danelahman.github.io/)**
+**[Catalin Hritcu, Inria Paris](https://prosecco.gforge.inria.fr/personal/hritcu)**
 
-[EUTypes Summer School](https://sites.google.com/view/2018eutypesschool/home/)
+[Summer School on Verification Technology, Systems, and Applications (VTSA)](http://resources.mpi-inf.mpg.de/departments/rg1/conferences/vtsa19/)
 
-Ohrid, Macedonia, 12 August, 2018
+University of Luxembourg, 1-2 July 2019
 ~
 
 [fstar-logo]: ../../stuff/fstar-new.png { width=200px }
@@ -34,13 +34,11 @@ Ohrid, Macedonia, 12 August, 2018
 
 ## Schedule ##
 
-* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
+* Yesterday: A Gentle Introduction to F\* (Purely Functional Programs)
 
-* Yesterday: Verifying Stateful Programs in F\*
+* Today: Verifying Stateful Programs in F\*
 
 * **Today: Monotonic State in F\***
-
-* Today: F\*'s Extensible Effect System and Metaprogramming in F\*
 
 <!-------------------------------------------------------------------------------->
 
@@ -54,7 +52,8 @@ Ohrid, Macedonia, 12 August, 2018
 
    ```
 
-* {.fragment} But recall that [**standard references**]{color:DarkBlue} alone are often [**unsatisfactory**]{color:DarkRed}
+* {.fragment} But recall that [**standard references**]{color:DarkBlue}
+  alone are often [**unsatisfactory**]{color:DarkRed}
 
 \ 
 
@@ -67,6 +66,11 @@ Ohrid, Macedonia, 12 August, 2018
 
 
 <!------------------------------------------------------------------------------>
+
+<!-- TODO: Flow from previous lecture quite bad.
+     - There we use monotonic logs as the example, while here we start with
+       monotonic counters and return to the log example very late, plus we
+       change that example quite a bit, unnecessarily. -->
 
 ## Hello World (aka Monotonic Counters) ##
 
@@ -247,7 +251,7 @@ Ohrid, Macedonia, 12 August, 2018
 
 ## ML-style Typed References ##
 
-* Typed references from yesterday's lecture are just an instance of mrefs
+* Typed references from previous lecture are just an instance of mrefs
   ```
   type ref a = mref a (fun _ _ -> True)
   ```
@@ -318,6 +322,8 @@ Ohrid, Macedonia, 12 August, 2018
   = evolve' a                                  (* Quiz: Why does it fail?  *)
   ```
 
+<!-- TODO: Spoiler, should let students discover error! -->
+
 * {.fragment} 
   ```
     | Empty     , _
@@ -326,8 +332,9 @@ Ohrid, Macedonia, 12 August, 2018
     | Frozen v1 , Frozen v2 -> v1 == v2
     | _         , _         -> False
   ```
-<!-- TODO: had a hand drawing on this on the board -->
 
+<!-- TODO: always draw this on the board, add a diagram for it:
+           https://photos.app.goo.gl/S146dy45vf38aJQh7 -->
 
 
 <!------------------------------------------------------------------------------>
@@ -358,8 +365,31 @@ let write #a (r:eref a) (v:a)
 = r := Mutable v
 
 let freeze #a (r:eref a) : St unit (* Exercise: Give precise type to freeze *)
-= r := Frozen (Mutable?.v !r)      (*           so that main() typechecks   *)
+= r := Frozen (Mutable?.v !r)      (*           so that main() on next slide typechecks   *)
 ```
+
+<!-- TODO: Don't understand the first question, heap independent read preconditon?
+     Solution file also uses `(requires (fun h -> ~(Empty? (sel h r)))`
+     What I think was meant as the solution was this:
+     
+let read (#a:Type) (r:eref a) : ST a (requires (fun _ -> token r (fun v -> ~(Empty? v))))
+      (ensures (fun h v h' -> h == h' /\
+                              (sel h r == Mutable v \/ sel h r == Frozen v)))
+  = recall_token r (fun v -> ~(Empty? v));
+    match (!r) with | Mutable v | Frozen v -> v
+
+But this also require an explicit witness_token in main, before the first read:
+  write r 42;
+  witness_token r (fun v -> ~(Empty? v));
+  ignore (read r);
+
+Unless we make the write ensure the token?
+
+-->
+
+<!-- TODO: The code in `ex/InitFreezeMST.fst` "evolved" quite a bit from what's here,
+           not always in a good way -->
+
 <!--
 ~Fragment
 ```
@@ -415,8 +445,28 @@ let main() : St unit =
   assert (x == 0)
 ```
 
+## Learning more about F*, further materials ##
 
-<!------------------------------------------------------------------------------>
+<!-- further materials for people who want to learn more about F*: -->
+
+- [EUTypes'18 slides] on monotonic state, monadic effects, Dijkstra monads, tactics, etc.
+- [F* tutorial] (Chapters 1-7): verifying pure functional programs
+- [Low* tutorial]: verifying low-level stateful programs
+- [Nik's OPLSS'19 course] (including video): large-scale case studies
+- [https://www.fstar-lang.org] has all the F* papers
+- [https://github.com/FStarLang/FStar] has code, examples, issues, wiki, etc
+
+[EUTypes'18 slides]: https://danel.ahman.ee/teaching/eutypes2018/index.html
+[F* tutorial]: https://www.fstar-lang.org/tutorial/
+[Low* tutorial]: https://fstarlang.github.io/lowstar/html
+[Nik's OPLSS'19 course]: https://fstar-lang.org/oplss2019/
+[https://www.fstar-lang.org]: https://www.fstar-lang.org
+[https://github.com/FStarLang/FStar]: https://github.com/FStarLang/FStar
+
+<!-- CH: Didn't get to this at VTSA, and it looks a bit technical,
+         so I wold have to look at it more carefully
+
+<\!-----------------------------------------------------------------------------\->
 
 ## Exercise: Initializable and Freezable Arrays ##
 
@@ -430,14 +480,13 @@ let main() : St unit =
 
 5. Frozen arrays can only be read
 
-  * no mutation of array elements
+  - no mutation of array elements
 
-  * no initialization preconditions for reading
+  - no initialization preconditions for reading
 
+Show this works as expected with client code similar to previous slide
 
-* Show this works as expected with client code similar to previous slide
-
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## How the Sausage is Made (`MST`) ##
 
@@ -470,7 +519,7 @@ let main() : St unit =
   ```
 ~
 
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## How the Sausage is Made (`ST`, much simplified) ##
 
@@ -502,24 +551,12 @@ let main() : St unit =
 * {.fragment} `alloc`, `!`, `:=`, `tokens` are derived from `MST` actions and `witnessed`
 
 
-<!------------------------------------------------------------------------------>
-
-## Next in this course ##
-
-* Friday: A Gentle Introduction to F\* (Purely Functional Programs)
-
-* Yesterday: Verifying Stateful Programs in F\*
-
-* Today: Monotonic State in F\*
-
-* **Today: F\*'s Extensible Effect System and Metaprogramming in F\***
-
-
-
-<!------------------------------------------------------------------------------>
+<\!-----------------------------------------------------------------------------\->
 
 ## Bonus Material: Temporarily Escaping the Preorder ##
 
 <br />
 
 (see Snapshots.fst)
+
+-->

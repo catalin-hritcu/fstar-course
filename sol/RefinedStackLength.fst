@@ -4,20 +4,16 @@ module RefinedStackLength
 
   abstract type stack = list int
   
-  abstract val length : stack -> Tot nat
-  let length s = List.Tot.length s
+  abstract let length (s:stack) : nat = List.Tot.length s
 
-  abstract val empty : s:stack{length s = 0}
-  let empty = []
-  
-  abstract val push : int -> s1:stack ->
-    Tot (s2:stack{length s2 = length s1 + 1})
-  let push x xs = Cons x xs
+  let is_empty (s:stack) : bool = (length s = 0)
 
-  abstract val pop : s1:stack{length s1 > 0} ->
-    Tot (s2:stack{length s2 = length s1 - 1})
-  let pop s = Cons?.tl s
+  abstract let empty : s:stack{length s = 0}  = []
 
-  abstract val top : s:stack{length s > 0} -> Tot int
-  let top s = Cons?.hd s
+  abstract let push (i:int) (s0:stack)
+  : s1:stack{length s1 = length s0 + 1} = Cons i s0
 
+  abstract let pop (s0:stack{length s0 > 0})
+  : s1:stack{length s1 = length s0 - 1} = Cons?.tl s0
+
+  abstract let top (s0:stack{length s0 > 0}) : int = Cons?.hd s0
